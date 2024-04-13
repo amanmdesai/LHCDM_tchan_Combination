@@ -1,7 +1,6 @@
 import sys
 import os
 import pandas as pd
-from io import StringIO
 
 folderName = "Sigmas"
 fileName = "S3M_sigmas.dat"
@@ -24,30 +23,41 @@ data = []
 [data.extend(s.split('\n')) for s in raw_data]
 data = list(filter(None, data))
 
-print("newdata",data)
 data.remove
 num_columns = 14  # Number of columns in each row
 num_rows = len(data) // num_columns  # Calculate the number of rows
-print(num_rows)
 data_rows = [data[i:i+num_columns] for i in range(0, len(data), num_columns)]
 
-print(data_rows)
 
 # Convert the 2D list into a Pandas DataFrame
 df = pd.DataFrame(data_rows, columns=['my(GeV)', 'mx(GeV)', 'coupling', 'quark', 'process', 'order', 'lhapdfID', 'CS(pb)', 
                                      'stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)'])
 
-print(df.head)
 df = df.drop(df.index[0])
-print(df.head)
 
 float_cols = ['my(GeV)', 'mx(GeV)', 'coupling','CS(pb)','stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)']
 
 for col in float_cols:
-    print(col,df[col])
+    #print(col,df[col])
     df[col] = df[col].astype(float)
 
-select_XXrow  = df[(df["my(GeV)"] == 2800) & (df["mx(GeV)"] == 1200) & (df['process']=='XX') & (df['order'] =='NLO')]
 
-print(select_XXrow)
 
+# define point
+mY = 2800
+mX = 1200
+proc = 'XX'
+order = 'NLO'
+couplings = [0.1,3.5]
+coupling_power = {'XX' : 4, 'YYt': 4}
+
+
+select_XXrow  = df[(df["my(GeV)"] == mY) & (df["mx(GeV)"] == mX) & (df['process']==proc) & (df['order'] == order)]
+
+if select_XXrow.empty:
+    print("no point found")
+    sys.exit()
+
+
+for coup in couplings:
+    print(select_XXrow['CShat(pb)']*coup**coupling_power[proc])
