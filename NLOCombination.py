@@ -47,7 +47,7 @@ for col in float_cols:
     print(col,df[col])
     df[col] = df[col].astype(float)
 
-select_row  = df[(df["my(GeV)"] == 2800) & (df["mx(GeV)"] == 1200) & (df['process']=='XX') & (df['order'] =='NLO')]
+select_XXrow  = df[(df["my(GeV)"] == 2800) & (df["mx(GeV)"] == 1200) & (df['process']=='XX') & (df['order'] =='NLO')]
 
-print(select_row)
+print(select_XXrow)
 
