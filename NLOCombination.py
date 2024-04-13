@@ -2,6 +2,18 @@ import sys
 import os
 import pandas as pd
 
+
+# define point
+mY = 2800
+mX = 1200
+proc = 'XX'
+order = 'NLO'
+couplings = [3.5,5.0]
+coupling_power = {'XX' : 4, 'XY':2, 'YYi':2, 'YYQCD': 0, 'YYtPP': 4, 'YYtPM': 4, 'YYtMM': 4}
+
+quark = 'u'
+model = 'S3M'
+
 folderName = "Sigmas"
 fileName = "S3M_sigmas.dat"
 inputfile = os.path.join(folderName,fileName)
@@ -42,22 +54,28 @@ for col in float_cols:
     df[col] = df[col].astype(float)
 
 
-
-# define point
-mY = 2800
-mX = 1200
-proc = 'XX'
-order = 'NLO'
-couplings = [0.1,3.5]
-coupling_power = {'XX' : 4, 'YYt': 4}
-
-
 select_XXrow  = df[(df["my(GeV)"] == mY) & (df["mx(GeV)"] == mX) & (df['process']==proc) & (df['order'] == order)]
 
 if select_XXrow.empty:
     print("no point found")
     sys.exit()
 
+val = {}
 
 for coup in couplings:
-    print(select_XXrow['CShat(pb)']*coup**coupling_power[proc])
+    val[coup]=select_XXrow['CShat(pb)']*coup**coupling_power[proc]
+    #print(val)
+
+
+name_recast_file = model + "_" + proc + "_" + order + "_SMu_" + "MY" + str(mY) + "_MX" + str(mX) + "_recast"
+
+file = os.path.join(folderName, "MA5_Recast",name_recast_file+".tar.gz")
+
+if os.path.exists(file):
+    print("File found")
+else:
+    print("file not found exiting code")
+    sys.exit()
+
+
+print(file)
