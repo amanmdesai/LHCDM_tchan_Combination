@@ -1,13 +1,11 @@
 import sys
 import os
 import pandas as pd
+from io import StringIO
 
 folderName = "Sigmas"
 fileName = "S3M_sigmas.dat"
 inputfile = os.path.join(folderName,fileName)
-
-
-import pandas as pd
 
 # Define the file path
 file_path = inputfile
@@ -16,48 +14,40 @@ file_path = inputfile
 with open(file_path, 'r') as file:
     content = file.read()
 
+
 # Replace all pipe symbols with spaces
-data = content.replace('|', ' ')
-data=data.split(" ")
-data = [x for x in data if x.strip()]
-print(data[13])
+raw_data = content.replace('|', ' ')
+raw_data=raw_data.split(" ")
+raw_data = [x for x in raw_data if x.strip()]
 
+data = []
+[data.extend(s.split('\n')) for s in raw_data]
+data = list(filter(None, data))
 
-# Define the separator pattern
-#separator_pattern = r'\s*\|\s*'
-#cols = ["my(GeV)", "mx(GeV)", "coupling","quark","process","order","lhapdfID","CS(pb)","stat(%)","scale+(%)","scale-(%)","PDF+(%)","PDF-(%)","CShat(pb)"]   
+print("newdata",data)
+data.remove
+num_columns = 14  # Number of columns in each row
+num_rows = len(data) // num_columns  # Calculate the number of rows
+print(num_rows)
+data_rows = [data[i:i+num_columns] for i in range(0, len(data), num_columns)]
 
-# Read the file using pandas
-#data = pd.read_csv(file_path, names=cols,sep=separator_pattern, engine='python')
+print(data_rows)
 
-# Display the data
-#print(data)#["my(GeV)"])
+# Convert the 2D list into a Pandas DataFrame
+df = pd.DataFrame(data_rows, columns=['my(GeV)', 'mx(GeV)', 'coupling', 'quark', 'process', 'order', 'lhapdfID', 'CS(pb)', 
+                                     'stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)'])
 
-"""
+print(df.head)
+df = df.drop(df.index[0])
+print(df.head)
 
-f = open(inputfile,'r')
-data = f.read().split('|')
-data_read = []
-#.split('\n')
-print(data)
+float_cols = ['my(GeV)', 'mx(GeV)', 'coupling','CS(pb)','stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)']
 
+for col in float_cols:
+    print(col,df[col])
+    df[col] = df[col].astype(float)
 
-cols = ["my(GeV)", "mx(GeV)", "coupling","quark","process","order","lhapdfID","CS(pb)","stat(%)","scale+(%)","scale-(%)","PDF+(%)","PDF-(%)","CShat(pb)"]   
+select_row  = df[(df["my(GeV)"] == 2800) & (df["mx(GeV)"] == 1200) & (df['process']=='XX') & (df['order'] =='NLO')]
 
-result = pd.read_csv(inputfile,names=cols,index_col=None,sep='\t') #
+print(select_row)
 
-print(result)
-
-print(result["my(GeV)"])
-"""
-
-#print(inputfile)
-#cols = ["my(GeV)", "mx(GeV)", "coupling","quark","process","order","lhapdfID","CS(pb)","stat(%)","scale+(%)","scale-(%)","PDF+(%)","PDF-(%)","CShat(pb)"]   
-#print(result)
-#result['Col'].str.replace('|', ':')
-#print(result["my(GeV)"])
-#print(result, result.columns)
-#f = open(inputfile,'r')
-#data = f.readlines()#.split('\t')
-#data.remove(" | ")
-#print(data)
