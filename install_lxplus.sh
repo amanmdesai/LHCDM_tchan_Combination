@@ -19,7 +19,7 @@ git clone https://github.com/MadAnalysis/madanalysis5.git
 python3 -m venv py3_env
 source py3_env/bin/activate
 pip3 install --upgrade pip
-python3 -m pip install scipy click tqdm six jsonschema jsonpatch PyYAML pyhf
+python3 -m pip install scipy click tqdm six jsonschema jsonpatch PyYAML pyhf pandas ma5-expert 
 #   deactivate
 
   # bug fix: modify the ma5 executable to work with python > 3.9 (see https://github.com/MadAnalysis/madanalysis5/issues/237)
