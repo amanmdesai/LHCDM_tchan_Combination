@@ -9,6 +9,12 @@ import tarfile
 import gzip
 
 
+
+def extract_tar(tar_file, destination):
+    with tarfile.open(tar_file, 'r:gz') as tar:
+        tar.extractall(destination)
+
+
 # define point
 mY = 2800
 mX = 1200
@@ -22,8 +28,8 @@ luminosity=137
 quark = 'u'
 model = 'S3M'
 
-folderName = "/eos/user/a/aman/SamplesForAman/u/Results_S3M_recast"
-fileName = "Sigmas/S3M_sigmas.dat"
+folderName = "installed_files/Sigmas"
+fileName = "S3M_sigmas.dat"
 inputfile = os.path.join(folderName,fileName)
 
 # Define the file path
@@ -71,12 +77,11 @@ rescale_xsec = {}
 
 for coup in couplings:
     rescale_xsec[coup]=select_XXrow['CShat(pb)'].values[0]*coup**coupling_power[proc]
-
-print(rescale_xsec)
-
 name_recast_file = model + "_" + proc + "_" + order + "_SMu_" + "MY" + str(mY) + "_MX" + str(mX) + "_recast"
 
 file = os.path.join(folderName, "MA5_Recast",name_recast_file+".tar.gz")
+
+extract_tar(file, folderName+"/MA5_Recast")
 
 if os.path.exists(file):
     print("File found")
@@ -87,18 +92,7 @@ else:
 # madanalysis expert mode 
 
 
-"""
-parser = argparse.ArgumentParser(description="Setup scanner")
-
-pathgroup = parser.add_argument_group("Path handling")
-
-pathgroup.add_argument("--ma5-dir",dest="MA5DIR", type=str, help="Set madanalysis 5 directory",
-                        default = "/scratch/lp1c12/DMtsimp_project/NLOcombination/core/MA5expertSED_MA5HS/madanalysis5")
-
-args = parser.parse_args()
-"""
-
-ma5dir = "/eos/user/a/aman/LHCDM_tchan_Combination/madanalysis5"#ma5dir
+ma5dir = "/home/amdesai/Music/LHCDM_tchan_Combination/madanalysis5"#ma5dir
 if not os.path.isdir(ma5dir):
     sys.exit('Detected MadAnalysis 5 general folder is not correct: ' + ma5dir)
 os.environ['MA5_BASE']=ma5dir
@@ -139,12 +133,12 @@ print(f"has PAD: {main.session_info.has_pad}\n"
       f"has scipy {main.session_info.has_scipy}\n"
       f"has pyhf {main.session_info.has_pyhf}")
 
-ma5.BackendManager.set_madanalysis_backend("/eos/user/a/aman/LHCDM_tchan_Combination/madanalysis5")
+ma5.BackendManager.set_madanalysis_backend("/home/amdesai/Music/LHCDM_tchan_Combination/madanalysis5")
 
-main_path = folderName#"/home/amdesai/Music/LHCDM_tchan_Combination/installed_files/Sigmas"
+main_path = "/home/amdesai/Music/LHCDM_tchan_Combination/installed_files/Sigmas"
 
 # Output folder
-combined_path = "/eos/user/a/aman/LHCDM_tchan_Combination/output"
+combined_path = "/home/amdesai/Music/LHCDM_tchan_Combination/output"
 if not os.path.isdir(combined_path):
     os.mkdir(combined_path)
 
@@ -200,25 +194,3 @@ with open(outfile,'a+') as mysummary:
 name="MY"+str(mY)+"_MX"+str(mX)+"_coup"+str(coupling)+"_xsec="+str(xsec)
 with open(os.path.join(combined_path, "done"), "a+") as d:
     d.write(f"{name}\n")
-
-
-"""
-with tarfile.open(XX_path+".tar.gz", 'r:gz') as tar:
-    # List the contents of the tar file
-    file_names = tar.getnames()
-    print(file_names)
-    
-    #file_content = tar.extractfile(XX_path)#+"/Output/SAF/dmtsimp/cms_sus_19_006/Cutflows/")
-
-    # Loop through each file in the tar file
-    for file_name in file_names:
-        # Extract the file content
-        file_content = tar.extractfile(file_name)
-        
-        # Read the content of the file
-        content = file_content.read()
-        
-        # Do something with the content (print it, process it, etc.)
-        print(content)
-"""
-
