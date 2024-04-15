@@ -15,7 +15,9 @@ mX = 1200
 proc = 'XX'
 order = 'NLO'
 couplings = [3.5,5.0]
+coupling = 5.0
 coupling_power = {'XX' : 4, 'XY':2, 'YYi':2, 'YYQCD': 0, 'YYtPP': 4, 'YYtPM': 4, 'YYtMM': 4}
+luminosity=137
 
 quark = 'u'
 model = 'S3M'
@@ -96,7 +98,7 @@ pathgroup.add_argument("--ma5-dir",dest="MA5DIR", type=str, help="Set madanalysi
 args = parser.parse_args()
 """
 
-ma5dir = "/home/amdesai/Music/LHCDM_tchan_Combination/installed_files/MA5expert/madanalysis5"#ma5dir
+ma5dir = "/home/amdesai/Music/LHCDM_tchan_Combination/madanalysis5"#ma5dir
 if not os.path.isdir(ma5dir):
     sys.exit('Detected MadAnalysis 5 general folder is not correct: ' + ma5dir)
 os.environ['MA5_BASE']=ma5dir
@@ -137,7 +139,7 @@ print(f"has PAD: {main.session_info.has_pad}\n"
       f"has scipy {main.session_info.has_scipy}\n"
       f"has pyhf {main.session_info.has_pyhf}")
 
-ma5.BackendManager.set_madanalysis_backend("/home/amdesai/Music/LHCDM_tchan_Combination/installed_files/MA5expert/madanalysis5")
+ma5.BackendManager.set_madanalysis_backend("/home/amdesai/Music/LHCDM_tchan_Combination/madanalysis5")
 
 main_path = "/home/amdesai/Music/LHCDM_tchan_Combination/installed_files/Sigmas"
 
@@ -149,28 +151,7 @@ if not os.path.isdir(combined_path):
 # Samples to be combined. Each set of samples are generated and stored in separate directories
 XX_path  = os.path.join(main_path, "MA5_Recast/S3M_XX_NLO_SMu_MY2800_MX1200_recast/Output/SAF/dmtsimp/cms_sus_19_006/Cutflows")
 
-xsec_XX  = rescale_xsec[5]
-
-luminosity=137
-"""
-with tarfile.open(XX_path+".tar.gz", 'r:gz') as tar:
-    # List the contents of the tar file
-    file_names = tar.getnames()
-    print(file_names)
-    
-    #file_content = tar.extractfile(XX_path)#+"/Output/SAF/dmtsimp/cms_sus_19_006/Cutflows/")
-
-    # Loop through each file in the tar file
-    for file_name in file_names:
-        # Extract the file content
-        file_content = tar.extractfile(file_name)
-        
-        # Read the content of the file
-        content = file_content.read()
-        
-        # Do something with the content (print it, process it, etc.)
-        print(content)
-"""
+xsec_XX  = rescale_xsec[coupling]
 
 XX_collection  = ma5.cutflow.Collection(XX_path,  xsection = xsec_XX,  lumi = luminosity,)
 
@@ -216,6 +197,28 @@ with open(outfile,'a+') as mysummary:
     mysummary.write('\n')
 
 # fill "done.txt"
-name="SED_NAMERUN xsec="+str(xsec)
+name="MY"+str(mY)+"_MX"+str(mX)+"_coup"+str(coupling)+"_xsec="+str(xsec)
 with open(os.path.join(combined_path, "done"), "a+") as d:
     d.write(f"{name}\n")
+
+
+"""
+with tarfile.open(XX_path+".tar.gz", 'r:gz') as tar:
+    # List the contents of the tar file
+    file_names = tar.getnames()
+    print(file_names)
+    
+    #file_content = tar.extractfile(XX_path)#+"/Output/SAF/dmtsimp/cms_sus_19_006/Cutflows/")
+
+    # Loop through each file in the tar file
+    for file_name in file_names:
+        # Extract the file content
+        file_content = tar.extractfile(file_name)
+        
+        # Read the content of the file
+        content = file_content.read()
+        
+        # Do something with the content (print it, process it, etc.)
+        print(content)
+"""
+
