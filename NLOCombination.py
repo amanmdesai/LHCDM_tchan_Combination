@@ -21,7 +21,8 @@ couplings = [3.5,5.0]
 coupling = 5.0
 coupling_power = {'XX' : 4, 'XY':2, 'YYi':2, 'YYQCD': 0, 'YYtPP': 4, 'YYtPM': 4, 'YYtMM': 4}
 processes_full = ['XX','XY','YYi','YYQCD','YYtPP','YYtPM','YYtMM']
-analysis_names = ["atlas_conf_2019_040","atlas_exot_2018_06"]
+PAD4SFS = ["atlas_exot_2018_06"]
+analysis_names = ["atlas_conf_2019_040","atlas_exot_2018_06",]#"cms_exo_20_004","cms_sus_19_006"]
 
 
 luminosity=137
@@ -170,7 +171,11 @@ for ana in analysis_names:
     outfile = os.path.join(combined_path, 'CLs_output.dat')
 
     run_recast = RunRecast(main, "S3M_XX/{}".format(ana))
-    run_recast.pad = os.path.join(ma5dir, "tools/PAD")
+    if ana in PAD4SFS:
+        run_recast.pad = os.path.join(ma5dir, "tools/PADForSFS")
+    else:
+        run_recast.pad = os.path.join(ma5dir, "tools/PAD")
+
     run_recast.logger.setLevel(logging.DEBUG)
 
     ET = run_recast.check_xml_scipy_methods()
