@@ -21,7 +21,7 @@ couplings = [3.5,5.0]
 coupling = 5.0
 coupling_power = {'XX' : 4, 'XY':2, 'YYi':2, 'YYQCD': 0, 'YYtPP': 4, 'YYtPM': 4, 'YYtMM': 4}
 processes_full = ['XX','XY','YYi','YYQCD','YYtPP','YYtPM','YYtMM']
-analysis_names = ["atlas_conf_2019_040","atlas_exot_2018_06"]
+analysis_names = ["1","2"]
 
 
 luminosity=137
@@ -146,56 +146,55 @@ if not os.path.isdir(combined_path):
 
 # Samples to be combined. Each set of samples are generated and stored in separate directories
 
-for ana in analysis_names:
+proc_path  = os.path.join(main_path, "MA5_Recast/S3M_XX_NLO_SMu_MY2800_MX1200_recast/Output/SAF/dmtsimp/cms_sus_19_006/Cutflows".format(ana))
 
-    proc_path  = os.path.join(main_path, "MA5_Recast/S3M_XX_NLO_SMu_MY2800_MX1200_recast/Output/SAF/dmtsimp/{}/Cutflows".format(ana))
 
-    xsec_proc  = rescale_xsec[coupling]
+xsec_proc  = rescale_xsec[coupling]
 
-    proc_collection  = ma5.cutflow.Collection(proc_path,  xsection = xsec_proc,  lumi = luminosity,)
+proc_collection  = ma5.cutflow.Collection(proc_path,  xsection = xsec_proc,  lumi = luminosity,)
 
-    xsec = xsec_proc
+xsec = xsec_proc
 
-    if not os.path.isdir(combined_path):
-        os.mkdir(combined_path)
+if not os.path.isdir(combined_path):
+    os.mkdir(combined_path)
 
-    with open(os.path.join(combined_path,'sample_info_proc.json'),'w') as info_file:
-        info = {"xsec" : float(xsec)}
-        json.dump(info, info_file, indent = 4)
+with open(os.path.join(combined_path,'sample_info_proc.json'),'w') as info_file:
+    info = {"xsec" : float(xsec)}
+    json.dump(info, info_file, indent = 4)
 
-    # Run Recast
-    main.datasets.Add("dmtsimp")
-    main.datasets.Get("dmtsimp").xsection = xsec # combined xsec
-    extrapolated_lumi = "default"; analysis = ana
-    outfile = os.path.join(combined_path, 'CLs_output.dat')
+# Run Recast
+main.datasets.Add("dmtsimp")
+main.datasets.Get("dmtsimp").xsection = xsec # combined xsec
+extrapolated_lumi = "default"; analysis = "cms_sus_19_006"
+outfile = os.path.join(combined_path, 'CLs_output.dat')
 
-    run_recast = RunRecast(main, "S3M_XX/{}".format(ana))
-    run_recast.pad = os.path.join(ma5dir, "tools/PAD")
-    run_recast.logger.setLevel(logging.DEBUG)
+run_recast = RunRecast(main, "S3M_XX/cms_sus_19_006")
+run_recast.pad = os.path.join(ma5dir, "tools/PAD")
+run_recast.logger.setLevel(logging.DEBUG)
 
-    ET = run_recast.check_xml_scipy_methods()
+ET = run_recast.check_xml_scipy_methods()
 
-    lumi, regions, regiondata = run_recast.parse_info_file(ET,analysis,extrapolated_lumi)
+lumi, regions, regiondata = run_recast.parse_info_file(ET,analysis,extrapolated_lumi)
 
-    # Reset signal region yields for combined sample
-    for reg in regions:
-        regiondata[reg]["Nf"] = proc_collection[reg].final_cut.eff * xsec_proc  
-        regiondata[reg]["N0"] = xsec
-        
-    # Calculate exclusion limits
-    regiondata = run_recast.extract_sig_cls(regiondata, regions, lumi,"exp")
-    regiondata = run_recast.extract_sig_lhcls(regiondata, lumi, "exp")
-    regiondata = run_recast.extract_sig_cls(regiondata, regions, lumi, "obs")
-    regiondata = run_recast.extract_sig_lhcls(regiondata, lumi, "obs")
-    regiondata = run_recast.extract_cls(regiondata, regions, xsec, lumi)
+# Reset signal region yields for combined sample
+for reg in regions:
+    regiondata[reg]["Nf"] = proc_collection[reg].final_cut.eff * xsec_proc  
+    regiondata[reg]["N0"] = xsec
+    
+# Calculate exclusion limits
+regiondata = run_recast.extract_sig_cls(regiondata, regions, lumi,"exp")
+regiondata = run_recast.extract_sig_lhcls(regiondata, lumi, "exp")
+regiondata = run_recast.extract_sig_cls(regiondata, regions, lumi, "obs")
+regiondata = run_recast.extract_sig_lhcls(regiondata, lumi, "obs")
+regiondata = run_recast.extract_cls(regiondata, regions, xsec, lumi)
 
-    # write the output file
-    with open(outfile,'a+') as mysummary:
-        run_recast.write_cls_header(xsec, mysummary)
-        run_recast.write_cls_output(analysis, regions, regiondata, {}, mysummary, False, lumi)
-        mysummary.write('\n')
+# write the output file
+with open(outfile,'a+') as mysummary:
+    run_recast.write_cls_header(xsec, mysummary)
+    run_recast.write_cls_output(analysis, regions, regiondata, {}, mysummary, False, lumi)
+    mysummary.write('\n')
 
-    # fill "done.txt"
-    name="MY"+str(mY)+"_MX"+str(mX)+"_coup"+str(coupling)+"_xsec="+str(xsec)
-    with open(os.path.join(combined_path, "done"), "a+") as d:
-        d.write(f"{name}\n")
+# fill "done.txt"
+name="MY"+str(mY)+"_MX"+str(mX)+"_coup"+str(coupling)+"_xsec="+str(xsec)
+with open(os.path.join(combined_path, "done"), "a+") as d:
+    d.write(f"{name}\n")
