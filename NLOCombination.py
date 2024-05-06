@@ -28,7 +28,7 @@ def extract_tar(tar_gz_file, extract_path):
 # define point
 mY = 1300
 mX = 900
-proc = 'Full'
+proc_study = 'Full'
 order = 'NLO'
 couplings = [3.5,5.0]
 coupling = 5.0
@@ -185,8 +185,8 @@ for proc in processes_full:
 
 # Output folder
 
-if proc == "Full":
-    combined_path = "/eos/user/a/aman/LHCDM_tchan_Combination/output/" + model + "_" + proc + "_" + order_file + "_SMd_" + "MY" + str(mY) + "_MX" + str(mX) + "_recast" 
+if proc_study == "Full":
+    combined_path = "/eos/user/a/aman/LHCDM_tchan_Combination/output/" + model + "_" + proc_study + "_" + order_file + "_SMd_" + "MY" + str(mY) + "_MX" + str(mX) + "_recast" 
 else:
     combined_path = "/eos/user/a/aman/LHCDM_tchan_Combination/output/" + name_recast_file 
 
