@@ -55,7 +55,7 @@ print(mY, mX, order, coupling, quark, model)
 coupling_power = {'XX' : 4, 'XY':2, 'YYi':2, 'YYQCD': 0, 'YYtPP': 4, 'YYtPM': 4, 'YYtMM': 4}
 processes_full = ['XX','XY','YYi','YYQCD','YYtPP','YYtPM','YYtMM']
 PAD4SFS = ["atlas_exot_2018_06"]
-analysis_names = ["atlas_conf_2019_040","atlas_exot_2018_06", "atlas_susy_2018_17", "cms_exo_20_004", "cms_sus_19_006"]
+analysis_names = ["atlas_conf_2019_040","atlas_exot_2018_06", "cms_exo_20_004", "cms_sus_19_006", "atlas_susy_2018_17"]
 luminosity=137
 
 inputfile = os.path.join(folderName,fileName)
