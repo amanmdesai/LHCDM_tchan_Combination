@@ -49,27 +49,6 @@ fileName = "Sigmas/{}_sigmas.dat".format(model)
 
 print(mY, mX, order, coupling, quark, model)
 
-"""
-mY = 1300
-mX = 900
-proc_study = 'Full'
-order = 'NLO'
-coupling = 5.0
-quark = 'd'
-model = 'F3S'
-
-
-
-# define point
-mY = 1300
-mX = 900
-proc_study = 'Full'
-order = 'NLO'
-couplings = [3.5,5.0]
-coupling = 5.0
-quark = 'd'
-model = 'F3S'
-"""
 
 coupling_power = {'XX' : 4, 'XY':2, 'YYi':2, 'YYQCD': 0, 'YYtPP': 4, 'YYtPM': 4, 'YYtMM': 4}
 processes_full = ['XX','XY','YYi','YYQCD','YYtPP','YYtPM','YYtMM']
