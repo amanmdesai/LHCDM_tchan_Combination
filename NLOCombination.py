@@ -47,6 +47,8 @@ folderName = inputfolder + "Results_{}_recast".format(model)
 fileName = "Sigmas/{}_sigmas.dat".format(model)
 
 
+print("Summary of inputs")
+print("mY mX order coupling quark model")
 print(mY, mX, order, coupling, quark, model)
 
 
@@ -202,7 +204,7 @@ if not os.path.isdir(combined_path):
 for ana in analysis_names:
     XX_path  = os.path.join(main_path, "MA5_Recast/{}_XX_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
     XY_path  = os.path.join(main_path, "MA5_Recast/{}_XY_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-    YYi_path  = os.path.join(main_path, "MA5_Recast/{}_YYi_LO_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+    YYi_path  = os.path.join(main_path, "MA5_Recast/{}_YYi_LO_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, quark, mY, mX, ana))
     YYQCD_path  = os.path.join(main_path, "MA5_Recast/{}_YYQCD_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
     YYtPP_path  = os.path.join(main_path, "MA5_Recast/{}_YYtPP_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
     YYtPM_path  = os.path.join(main_path, "MA5_Recast/{}_YYtPM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
