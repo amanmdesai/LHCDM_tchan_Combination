@@ -190,7 +190,7 @@ for proc in processes_full:
 # Output folder
 
 if proc_study == "Full":
-    combined_path = args.output + model + "_" + proc + "_" + order_file + "_SM"+ quark+ "_MY" + str(mY) + "_MX" + str(mX) + "_recast" 
+    combined_path = args.output + model + "_" + proc_study + "_" + order_file + "_SM"+ quark+ "_MY" + str(mY) + "_MX" + str(mX) + "_recast" 
 else:
     combined_path = args.output + name_recast_file 
 
