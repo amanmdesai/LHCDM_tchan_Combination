@@ -21,8 +21,8 @@ def extract_tar(tar_gz_file, extract_path):
 
 
 parser = argparse.ArgumentParser(prog = 'DMSimpt_Combination',description = '')
-parser.add_argument("--MY", type=int,help='mass of DM particle')
-parser.add_argument("--MX", type=int,help='mass of DM mediator')
+parser.add_argument("--MY", type=int,help='mass of DM mediator')
+parser.add_argument("--MX", type=int,help='mass of DM particle')
 parser.add_argument("--coup", type=float,help='Coupling')
 parser.add_argument("--quark", type=str,help='Quark')
 parser.add_argument("--order", type=str,help='order')
