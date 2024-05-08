@@ -77,7 +77,7 @@ data = []
 data = list(filter(None, data))
 
 data.remove
-num_columns = 15  # Number of columns in each row
+num_columns = 15  # Number of columns in each row use 14 if large sample
 num_rows = len(data) // num_columns  # Calculate the number of rows
 data_rows = [data[i:i+num_columns] for i in range(0, len(data), num_columns)]
 
@@ -85,6 +85,10 @@ data_rows = [data[i:i+num_columns] for i in range(0, len(data), num_columns)]
 # Convert the 2D list into a Pandas DataFrame
 df = pd.DataFrame(data_rows, columns=['my(GeV)', 'mx(GeV)', 'quark', 'wy/my', 'coupling', 'process', 'order', 'lhapdfID', 'CS(pb)', 
                                      'stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)'])
+
+# for large sample use the below
+#df = pd.DataFrame(data_rows, columns=['my(GeV)', 'mx(GeV)', 'quark', 'coupling', 'process', 'order', 'lhapdfID', 'CS(pb)', 
+#                                     'stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)'])
 
 df = df.drop(df.index[0])
 
