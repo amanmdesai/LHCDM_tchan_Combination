@@ -43,7 +43,7 @@ model = args.model
 proc_study = 'Full'
 
 inputfolder = args.input #"/eos/user/a/aman/dsb_lowstat/"
-folderName = inputfolder + "Results_{}_recast".format(model)
+folderName = os.path.join(inputfolder, "Results_{}_recast".format(model))
 fileName = "Sigmas/{}_sigmas.dat".format(model)
 
 
