@@ -12,8 +12,12 @@ Step 2:
 `source py3_env/bin/activate`
 
 
-To run interactively, use `python NLOCombination.py`
+To run interactively, use `python NLOCombination.py --MY 1300 --MX 900 --coup 5 --quark d --order NLO --model F3S`
 
 for submission to condor:
 
 `run.sh` and `job.sub` are used
+
+## To submit multiple condor jobs: 
+
+Use `python job_creator.py` 
