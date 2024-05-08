@@ -13,11 +13,10 @@ for my in YMASSArray:
                 for quark in QuarkArray:
                     job_name = "{}_SM{}_mY{}_mX{}_coup{}.sub".format(model, quark, my, mx, coup)
                     run_name = "{}_SM{}_mY{}_mX{}_coup{}.sh".format(model, quark, my, mx, coup)
-
                     os.system("rm " + run_name)
                     os.system("echo cd /eos/user/a/aman/LHCDM_tchan_Combination>> {}".format(run_name))
                     os.system("echo source py3_env/bin/activate >> {}".format(run_name))
-                    os.system("echo python NLOCombination.py --MY 1300 --MX 900 --coup 5 --quark d --order NLO --model F3S  >> {}".format(run_name))
+                    os.system("echo python NLOCombination.py --MY {} --MX {} --coup {} --quark {} --order NLO --model {}  >> {}".format(my, mx, coup, quark, model, run_name))
                     os.system("rm " + job_name)
                     os.system("touch " + job_name)
                     os.system("echo Executable            = {}>> {}".format(run_name, job_name))
