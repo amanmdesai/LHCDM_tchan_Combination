@@ -30,6 +30,7 @@ parser.add_argument("--model", type=str,help='Model')
 parser.add_argument("--input", type=str,help='Input file path and Name',default="/eos/user/a/aman/dsb_lowstat/")
 parser.add_argument("--output", type=str,help='Output file path and Name',default="/eos/user/a/aman/LHCDM_tchan_Combination/output/")
 parser.add_argument("--ma5dir", type=str,help='Input file path and Name',default="/eos/user/a/aman/LHCDM_tchan_Combination/madanalysis5")
+parser.add_argument("--wmratio", type=str,help='yes/no for fixed wy/my ratio',default="yes")
 args = parser.parse_args()
 
 # define point
@@ -77,14 +78,20 @@ data = []
 data = list(filter(None, data))
 
 data.remove
-num_columns = 15  # Number of columns in each row use 14 if large sample
+if args.wmratio == "yes":
+    num_columns = 15  # Number of columns in each row use 14 if large sample
+    columns_data=['my(GeV)', 'mx(GeV)', 'quark', 'wy/my', 'coupling', 'process', 'order', 'lhapdfID', 'CS(pb)', 
+                                        'stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)']
+else:
+    num_columns = 14
+    columns_data=['my(GeV)', 'mx(GeV)', 'quark', 'coupling', 'process', 'order', 'lhapdfID', 'CS(pb)', 
+                                        'stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)']
 num_rows = len(data) // num_columns  # Calculate the number of rows
 data_rows = [data[i:i+num_columns] for i in range(0, len(data), num_columns)]
 
 
 # Convert the 2D list into a Pandas DataFrame
-df = pd.DataFrame(data_rows, columns=['my(GeV)', 'mx(GeV)', 'quark', 'wy/my', 'coupling', 'process', 'order', 'lhapdfID', 'CS(pb)', 
-                                     'stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)'])
+df = pd.DataFrame(data_rows, columns=columns_data)
 
 # for large sample use the below
 #df = pd.DataFrame(data_rows, columns=['my(GeV)', 'mx(GeV)', 'quark', 'coupling', 'process', 'order', 'lhapdfID', 'CS(pb)', 
