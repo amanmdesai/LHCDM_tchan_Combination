@@ -47,11 +47,9 @@ inputfolder = args.input #"/eos/user/a/aman/dsb_lowstat/"
 folderName = os.path.join(inputfolder, "Results_{}_recast".format(model))
 fileName = "Sigmas/{}_sigmas.dat".format(model)
 
-
 print("Summary of inputs")
 print("mY mX order coupling quark model")
 print(mY, mX, order, coupling, quark, model)
-
 
 coupling_power = {'XX' : 4, 'XY':2, 'YYi':2, 'YYQCD': 0, 'YYtPP': 4, 'YYtPM': 4, 'YYtMM': 4}
 processes_full = ['XX','XY','YYi','YYQCD','YYtPP','YYtPM','YYtMM']

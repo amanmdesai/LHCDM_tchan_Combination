@@ -1,9 +1,10 @@
+#!/bin/bash
+
 ###################################
 #### INSTALL AND CONFIGURE MA5 ####
 ###################################
 InstallMadAnalysisfolder="/eos/user/a/aman/LHCDM_tchan_Combination"
 
-#/MG5MA5/MA5"
 
 if [[ ! -e ${InstallMadAnalysisfolder}/MA5installed ]]; then
   if [[ -d ${InstallMadAnalysisfolder}/madanalysis5 ]]; then
