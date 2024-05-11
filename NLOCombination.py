@@ -54,7 +54,7 @@ print(mY, mX, order, coupling, quark, model)
 coupling_power = {'XX' : 4, 'XY':2, 'YYi':2, 'YYQCD': 0, 'YYtPP': 4, 'YYtPM': 4, 'YYtMM': 4}
 processes_full = ['XX','XY','YYi','YYQCD','YYtPP','YYtPM','YYtMM']
 PAD4SFS = ["atlas_exot_2018_06"]
-analysis_names = ["atlas_conf_2019_040","atlas_exot_2018_06", "cms_exo_20_004", "cms_sus_19_006", "atlas_susy_2018_17"]
+analysis_names = ["atlas_conf_2019_040","atlas_exot_2018_06", "cms_sus_19_006", "cms_exo_20_004", "atlas_susy_2018_17"]
 luminosity=137
 
 inputfile = os.path.join(folderName,fileName)
@@ -206,7 +206,7 @@ else:
     combined_path = args.output + name_recast_file 
 
 if not os.path.isdir(combined_path):
-    os.mkdir(combined_path)
+    os.system("mkdir -p " + combined_path)
 
 
 #for coupling in couplings:
@@ -232,8 +232,8 @@ for ana in analysis_names:
     YYtPM_collection = ma5.cutflow.Collection(YYtPM_path, xsection = rescale_xsec_YYtPM, lumi = luminosity,)
     YYtMM_collection = ma5.cutflow.Collection(YYtMM_path, xsection = rescale_xsec_YYtMM, lumi = luminosity,)
 
-    if not os.path.isdir(combined_path):
-        os.mkdir(combined_path)
+    #if not os.path.isdir(combined_path):
+    #   os.mkdir(combined_path)
 
     with open(os.path.join(combined_path,'sample_info_proc.json'),'w') as info_file:
         info = {"xsec" : float(xsec)}
