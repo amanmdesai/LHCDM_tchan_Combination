@@ -6,24 +6,16 @@ parser.add_argument("--input", type=str,help='Input Data file path and Name',def
 parser.add_argument("--programpath", type=str,help='path to NLOCombination.py',default="/eos/user/a/aman/LHCDM_tchan_Combination/")
 parser.add_argument("--output", type=str,help='Output file path and Name',default="/eos/user/a/aman/LHCDM_tchan_Combination/output/")
 parser.add_argument("--ma5dir", type=str,help='Input file path and Name',default="/eos/user/a/aman/LHCDM_tchan_Combination/madanalysis5")
-parser.add_argument("--wmratio", type=str,help='yes/no for fixed wy/my ratio',default="yes")
+parser.add_argument("--wmratio", type=str,help='y/n for fixed wy/my ratio',default="y")
 args = parser.parse_args()
 
-MODELArray = ["F3S"]
-YMASSArray = [1300]
-XMASSArray = [900]
+MODELArray = ["S3M"]
+XMASSArray = [-5, -1, 0, 1, 10, 50, 100, 200, 400, 600, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800, 4000]
+YMASSArray = [0, 200, 400, 600, 800, 1000, 1200, 1300, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800, 4000]
 COUPLINGArray = [5]
 QuarkArray = ["d"]
 OrderArray = ["NLO"]
 
-"""
-MODELArray = ["S3D", "S3M", "F3S", "F3C", "F3V", "F3W"]
-XMASSArray = [10, 50]
-YMASSArray = [100, 200]
-COUPLINGArray = [5]
-QuarkArray = ["d"]
-OrderArray = ["LO", "NLO"]
-"""
 
 for my in YMASSArray:
     for mx in XMASSArray:
@@ -31,7 +23,11 @@ for my in YMASSArray:
             for model in MODELArray:
                 for quark in QuarkArray:
                     for order in OrderArray:
-                        #if os.path.exists(os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_XX_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast")):
+                        if mx < 0:
+                            mx = mx + my
+                        if mx >= my:
+                            continue
+                        if os.path.exists(os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_XX_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz")):
                             job_name = "{}_SM{}_mY{}_mX{}_coup{}.sub".format(model, quark, my, mx, coup)
                             run_name = "{}_SM{}_mY{}_mX{}_coup{}.sh".format(model, quark, my, mx, coup)
                             os.system("rm " + run_name)
@@ -46,7 +42,11 @@ for my in YMASSArray:
                             os.system(f"echo Error                 = log/ap.{job_name}.\$\(ClusterId\).\$\(ProcId\).err >> {job_name}")
                             os.system(f"echo Log                   = log/ap.{job_name}.\$\(ClusterId\).\$\(ProcId\).log >> {job_name}")
                             os.system("echo should_transfer_files   = yes >> {}".format(job_name))
-                            os.system("echo RequestCpus = 8 >> {}".format(job_name))
-                            os.system("echo +JobFlavour = 'testmatch' >> {}".format(job_name))
+                            os.system("echo RequestCpus = 4 >> {}".format(job_name))
+                            os.system("echo +JobFlavour = 'tomorrow' >> {}".format(job_name))
+                            #os.system("echo +AccountingGroup = 'group_u_FCC.local_gen' >> {}".format(job_name))
                             os.system("echo queue >> {}".format(job_name))
                             os.system("condor_submit {}".format(job_name))
+                        else:
+                            print(os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_XX_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz"))
+                            print("file does not exists")

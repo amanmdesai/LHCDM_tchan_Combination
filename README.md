@@ -61,3 +61,10 @@ options:
   --ma5dir MA5DIR    Input file path and Name
   --wmratio WMRATIO  yes/no for fixed wy/my ratio
 ```
+
+
+
+=========================================
+
+python job_creator.py --input /eos/user/a/aman/SamplesForAman/d --wmratio no
+

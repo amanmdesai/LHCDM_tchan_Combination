@@ -20,7 +20,7 @@ git clone https://github.com/MadAnalysis/madanalysis5.git
 python3 -m venv py3_env
 source py3_env/bin/activate
 pip3 install --upgrade pip
-python3 -m pip install scipy click tqdm six jsonschema jsonpatch PyYAML pyhf pandas ma5-expert 
+python3 -m pip install scipy click tqdm six jsonschema jsonpatch PyYAML pyhf pandas lxml ma5-expert  
 #   deactivate
 
   # bug fix: modify the ma5 executable to work with python > 3.9 (see https://github.com/MadAnalysis/madanalysis5/issues/237)
@@ -35,7 +35,7 @@ python3 -m pip install scipy click tqdm six jsonschema jsonpatch PyYAML pyhf pan
 
   # bug fix to avoid the recast crashing for some searches
   # if fixed in new releases this has no effect
-  #sed -i "s|new_sigma = new_sigma \* lumi_scaling\*\*2|new_sigma = sigma\*lumi_scaling\*\*2|g" ${InstallMadAnalysisfolder}/madanalysis5/madanalysis/misc/run_recast.py
+  sed -i "s|new_sigma = new_sigma \* lumi_scaling\*\*2|new_sigma = sigma\*lumi_scaling\*\*2|g" ${InstallMadAnalysisfolder}/madanalysis5/madanalysis/misc/run_recast.py
 
   if [[ -d ${InstallMadAnalysisfolder}/madanalysis5/tools/PADForSFS ]] && [[ -d ${InstallMadAnalysisfolder}/madanalysis5/tools/PAD ]]; then
     touch ${InstallMadAnalysisfolder}/MA5installed

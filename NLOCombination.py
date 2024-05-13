@@ -7,10 +7,8 @@ import pandas as pd
 import shutil
 import os
 
-
 # Test command to run
 # python NLOCombination.py --MY 1300 --MX 900 --coup 5 --quark d --order NLO --model F3S 
-
 
 def extract_tar(tar_gz_file, extract_path):
     try:
@@ -30,7 +28,7 @@ parser.add_argument("--model", type=str,help='Model')
 parser.add_argument("--input", type=str,help='Input file path and Name',default="/eos/user/a/aman/dsb_lowstat/")
 parser.add_argument("--output", type=str,help='Output file path and Name',default="/eos/user/a/aman/LHCDM_tchan_Combination/output/")
 parser.add_argument("--ma5dir", type=str,help='Input file path and Name',default="/eos/user/a/aman/LHCDM_tchan_Combination/madanalysis5")
-parser.add_argument("--wmratio", type=str,help='yes/no for fixed wy/my ratio',default="yes")
+parser.add_argument("--wmratio", type=str,help='y/n for fixed wy/my ratio',default="y")
 args = parser.parse_args()
 
 # define point
@@ -76,13 +74,13 @@ data = []
 data = list(filter(None, data))
 
 data.remove
-if args.wmratio == "yes":
-    num_columns = 15  # Number of columns in each row use 14 if large sample
+if args.wmratio == "y":
+    num_columns = 15  
     columns_data=['my(GeV)', 'mx(GeV)', 'quark', 'wy/my', 'coupling', 'process', 'order', 'lhapdfID', 'CS(pb)', 
                                         'stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)']
-else:
+elif args.wmratio == "n":
     num_columns = 14
-    columns_data=['my(GeV)', 'mx(GeV)', 'quark', 'coupling', 'process', 'order', 'lhapdfID', 'CS(pb)', 
+    columns_data=['my(GeV)', 'mx(GeV)', 'coupling', 'quark', 'process', 'order', 'lhapdfID', 'CS(pb)', 
                                         'stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)']
 num_rows = len(data) // num_columns  # Calculate the number of rows
 data_rows = [data[i:i+num_columns] for i in range(0, len(data), num_columns)]
@@ -91,21 +89,15 @@ data_rows = [data[i:i+num_columns] for i in range(0, len(data), num_columns)]
 # Convert the 2D list into a Pandas DataFrame
 df = pd.DataFrame(data_rows, columns=columns_data)
 
-# for large sample use the below
-#df = pd.DataFrame(data_rows, columns=['my(GeV)', 'mx(GeV)', 'quark', 'coupling', 'process', 'order', 'lhapdfID', 'CS(pb)', 
-#                                     'stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)'])
-
 df = df.drop(df.index[0])
 
 float_cols = ['my(GeV)', 'mx(GeV)', 'coupling','CS(pb)','stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)']
 
 for col in float_cols:
-    #print(col,df[col])
     df[col] = df[col].astype(float)
 
 select_row  = df[(df["my(GeV)"] == mY) & (df["mx(GeV)"] == mX)  & (df['order'] == order)]
 select_row_YYi  = df[(df["my(GeV)"] == mY) & (df["mx(GeV)"] == mX)]
-
 
 if select_row.empty:
     print("no point found")
@@ -129,7 +121,6 @@ rescale_xsec_YYtPP=select_row[select_row["process"] == 'YYtPP']['CShat(pb)'].val
 rescale_xsec_YYtPM=select_row[select_row["process"] == 'YYtPM']['CShat(pb)'].values[0]*coupling**coupling_power['YYtPM']
 rescale_xsec_YYtMM=select_row[select_row["process"] == 'YYtMM']['CShat(pb)'].values[0]*coupling**coupling_power['YYtMM']
 
-
 # madanalysis expert mode 
 
 ma5dir = args.ma5dir 
@@ -138,7 +129,6 @@ if not os.path.isdir(ma5dir):
 os.environ['MA5_BASE']=ma5dir
 
 sys.path.insert(0, ma5dir)
-
 
 # Adding the python service folder to the current PYTHONPATH
 servicedir = ma5dir+'/tools/ReportGenerator/Services/'
@@ -165,7 +155,6 @@ main.archi_info.ma5dir = ma5dir
 main.CheckConfig(debug=True)
 main.CheckConfig2(debug=True)
 main.recast = "on"
-
 
 print(f"has PAD: {main.session_info.has_pad}\n"
       f"has PAD4SFS {main.session_info.has_padsfs}\n"
