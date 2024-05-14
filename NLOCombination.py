@@ -52,7 +52,7 @@ print(mY, mX, order, coupling, quark, model)
 coupling_power = {'XX' : 4, 'XY':2, 'YYi':2, 'YYQCD': 0, 'YYtPP': 4, 'YYtPM': 4, 'YYtMM': 4}
 processes_full = ['XX','XY','YYi','YYQCD','YYtPP','YYtPM','YYtMM']
 PAD4SFS = ["atlas_exot_2018_06"]
-analysis_names = ["atlas_conf_2019_040","atlas_exot_2018_06", "cms_sus_19_006", "cms_exo_20_004", "atlas_susy_2018_17"]
+analysis_names = ["atlas_conf_2019_040","atlas_exot_2018_06", "cms_sus_19_006", "cms_exo_20_004"]#, "atlas_susy_2018_17"]
 luminosity=137
 
 inputfile = os.path.join(folderName,fileName)
@@ -174,7 +174,7 @@ for proc in processes_full:
     else:
         order_file = order
 
-    name_recast_file = model + "_" + proc + "_" + order_file + "_SM"+ quark + "_MY" + str(mY) + "_MX" + str(mX) + "_recast"
+    name_recast_file = model + "_" + proc + "_" + order_file + "_SM"+ quark + "_MY" + str(mY) + "_MX" + str(mX) + "_coup" + coupling + "_recast"
 
     file = os.path.join(folderName, "MA5_Recast",name_recast_file+".tar.gz")
     extract_tar(file, os.path.join(folderName, "MA5_Recast",))
@@ -190,7 +190,7 @@ for proc in processes_full:
 # Output folder
 
 if proc_study == "Full":
-    combined_path = args.output + model + "_" + proc_study + "_" + order_file + "_SM"+ quark+ "_MY" + str(mY) + "_MX" + str(mX) + "_recast" 
+    combined_path = args.output + model + "_" + proc_study + "_" + order_file + "_SM"+ quark+ "_MY" + str(mY) + "_MX" + str(mX) + "_coup" + coupling + "_recast" 
 else:
     combined_path = args.output + name_recast_file 
 
