@@ -68,9 +68,9 @@ options:
 
 python3 job_creator.py --input /eos/user/a/aman/SamplesForAman/d --wmratio n
 
-python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/d --wmratio y --output /eos/user/a/aman/LHCDM_tchan_Combination/output_run14may/
+python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/d --wmratio y --output /eos/user/a/aman/LHCDM_tchan_Combination/output_run14may_d/ --wmratio y
 
-python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/s --wmratio y --output /eos/user/a/aman/LHCDM_tchan_Combination/output_run14may_s/
+python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/s --wmratio y --output /eos/user/a/aman/LHCDM_tchan_Combination/output_run14may_s/ --wmratio y
 
-python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/b --wmratio y --output /eos/user/a/aman/LHCDM_tchan_Combination/output_run14may_b/
+#python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/b --wmratio y --output /eos/user/a/aman/LHCDM_tchan_Combination/output_run14may_b/
 

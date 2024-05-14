@@ -103,8 +103,6 @@ if select_row.empty:
     print("no point found")
     sys.exit()
 
-processes_full = ['XX','XY','YYi','YYQCD','YYtPP','YYtPM','YYtMM']
-
 rescale_xsec_XX = 0
 rescale_xsec_XY = 0
 rescale_xsec_YYi = 0
@@ -177,7 +175,7 @@ for proc in processes_full:
     name_recast_file = model + "_" + proc + "_" + order_file + "_SM"+ quark + "_MY" + str(mY) + "_MX" + str(mX) + "_coup" + coupling + "_recast"
 
     file = os.path.join(folderName, "MA5_Recast",name_recast_file+".tar.gz")
-    extract_tar(file, os.path.join(folderName, "MA5_Recast",))
+    extract_tar(file, os.path.join(folderName, "MA5_Recast"))
 
     print(file)
 
