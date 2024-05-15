@@ -72,5 +72,6 @@ python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/Gene
 
 python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/s --wmratio y --output /eos/user/a/aman/LHCDM_tchan_Combination/output_run14may_s/ --wmratio y
 
-#python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/b --wmratio y --output /eos/user/a/aman/LHCDM_tchan_Combination/output_run14may_b/
+python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/u --wmratio y --output /eos/user/a/aman/LHCDM_tchan_Combination/output_run14may_u/ --wmratio y
+
 
