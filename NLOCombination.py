@@ -11,6 +11,10 @@ import os
 # python NLOCombination.py --MY 1300 --MX 900 --coup 5 --quark d --order NLO --model F3S 
 
 def extract_tar(tar_gz_file, extract_path):
+    print(os.path.join(extract_path,tar_gz_file))
+    if os.path.exists(os.path.join(extract_path,tar_gz_file)):
+        return 0
+    tar_gz_file=tar_gz_file+".tar.gz"
     try:
         shutil.unpack_archive(tar_gz_file, extract_path, 'gztar')
         print(f"Successfully extracted '{tar_gz_file}' to '{extract_path}'.")
@@ -172,11 +176,11 @@ for proc in processes_full:
     else:
         order_file = order
 
-    name_recast_file = model + "_" + proc + "_" + order_file + "_SM"+ quark + "_MY" + str(mY) + "_MX" + str(mX) + "_coup" + coupling + "_recast"
+    name_recast_file = model + "_" + proc + "_" + order_file + "_SM"+ quark + "_MY" + str(mY) + "_MX" + str(mX)  + "_recast"
 
-    file = os.path.join(folderName, "MA5_Recast",name_recast_file+".tar.gz")
-    extract_tar(file, os.path.join(folderName, "MA5_Recast"))
-
+    file = os.path.join(folderName, "MA5_Recast",name_recast_file)
+    extract_tar(file, os.path.join(folderName, "tmp/MA5_Recast"))
+    file = file+ ".tar.gz"
     print(file)
 
     if os.path.exists(file):
@@ -188,7 +192,7 @@ for proc in processes_full:
 # Output folder
 
 if proc_study == "Full":
-    combined_path = args.output + model + "_" + proc_study + "_" + order_file + "_SM"+ quark+ "_MY" + str(mY) + "_MX" + str(mX) + "_coup" + coupling + "_recast" 
+    combined_path = args.output +  model + "_" + proc_study + "_" + order_file + "_SM"+ quark+ "_MY" + str(mY) + "_MX" + str(mX) + "_coup" + str(coupling) + "_recast" 
 else:
     combined_path = args.output + name_recast_file 
 
@@ -198,13 +202,13 @@ if not os.path.isdir(combined_path):
 
 #for coupling in couplings:
 for ana in analysis_names:
-    XX_path  = os.path.join(main_path, "MA5_Recast/{}_XX_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-    XY_path  = os.path.join(main_path, "MA5_Recast/{}_XY_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-    YYi_path  = os.path.join(main_path, "MA5_Recast/{}_YYi_LO_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, quark, mY, mX, ana))
-    YYQCD_path  = os.path.join(main_path, "MA5_Recast/{}_YYQCD_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-    YYtPP_path  = os.path.join(main_path, "MA5_Recast/{}_YYtPP_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-    YYtPM_path  = os.path.join(main_path, "MA5_Recast/{}_YYtPM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-    YYtMM_path  = os.path.join(main_path, "MA5_Recast/{}_YYtMM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+    XX_path  = os.path.join(main_path, "tmp/MA5_Recast/{}_XX_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+    XY_path  = os.path.join(main_path, "tmp/MA5_Recast/{}_XY_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+    YYi_path  = os.path.join(main_path, "tmp/MA5_Recast/{}_YYi_LO_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, quark, mY, mX, ana))
+    YYQCD_path  = os.path.join(main_path, "tmp/MA5_Recast/{}_YYQCD_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+    YYtPP_path  = os.path.join(main_path, "tmp/MA5_Recast/{}_YYtPP_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+    YYtPM_path  = os.path.join(main_path, "tmp/MA5_Recast/{}_YYtPM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+    YYtMM_path  = os.path.join(main_path, "tmp/MA5_Recast/{}_YYtMM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
 
     xsec_proc  = rescale_xsec_XX + rescale_xsec_XY + rescale_xsec_YYi + rescale_xsec_YYQCD + \
     rescale_xsec_YYtPP + rescale_xsec_YYtPM + rescale_xsec_YYtMM
@@ -218,9 +222,6 @@ for ana in analysis_names:
     YYtPP_collection = ma5.cutflow.Collection(YYtPP_path, xsection = rescale_xsec_YYtPP, lumi = luminosity,)
     YYtPM_collection = ma5.cutflow.Collection(YYtPM_path, xsection = rescale_xsec_YYtPM, lumi = luminosity,)
     YYtMM_collection = ma5.cutflow.Collection(YYtMM_path, xsection = rescale_xsec_YYtMM, lumi = luminosity,)
-
-    #if not os.path.isdir(combined_path):
-    #   os.mkdir(combined_path)
 
     with open(os.path.join(combined_path,'sample_info_proc.json'),'w') as info_file:
         info = {"xsec" : float(xsec)}

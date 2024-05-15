@@ -15,7 +15,7 @@ YMASSArray = [0, 200, 400, 600, 800, 1000, 1200, 1300, 1400, 1600, 1800, 2000, 2
 COUPLINGArray = [1]
 QuarkArray = ["d", "s", "b"]
 OrderArray = ["NLO"]
-
+proc = "Full"
 
 for my in YMASSArray:
     for mx in XMASSArray:
@@ -49,6 +49,14 @@ for my in YMASSArray:
                             os.system("echo +JobFlavour = \"\'tomorrow\'\" >> {}".format(job_name))
                             #os.system("echo +AccountingGroup = \"\'group_u_FCC.local_gen\"\' >> {}".format(job_name))
                             os.system("echo queue >> {}".format(job_name))
-                            os.system("condor_submit {}".format(job_name))
+
+                            name_recast_file = model + "_" + proc + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_coup" + str(coup) + "_recast"
+                            print(os.path.join(args.output, name_recast_file, "CLs_output.dat"), "file exists")
+
+                            if os.path.exists(os.path.join(args.output, name_recast_file, "CLs_output.dat")):
+                                print(os.path.join(args.output, name_recast_file, "CLs_output.dat"), "file exists")
+                                continue
+                            else:
+                                os.system("condor_submit {}".format(job_name))
                         else:
                             print(os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_XX_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz"), "file does not exists")
