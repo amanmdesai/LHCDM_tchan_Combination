@@ -51,10 +51,10 @@ for my in YMASSArray:
                             os.system("echo queue >> {}".format(job_name))
 
                             name_recast_file = model + "_" + proc + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_coup" + str(coup) + "_recast"
-                            print(os.path.join(args.output, name_recast_file, "CLs_output.dat"), "file exists")
 
                             if os.path.exists(os.path.join(args.output, name_recast_file, "CLs_output.dat")):
                                 print(os.path.join(args.output, name_recast_file, "CLs_output.dat"), "file exists")
+                                print("skipping")
                                 continue
                             else:
                                 os.system("condor_submit {}".format(job_name))
