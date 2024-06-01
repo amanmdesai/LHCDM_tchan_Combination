@@ -179,7 +179,7 @@ for proc in processes_full:
     name_recast_file = model + "_" + proc + "_" + order_file + "_SM"+ quark + "_MY" + str(mY) + "_MX" + str(mX)  + "_recast"
 
     file = os.path.join(folderName, "MA5_Recast",name_recast_file)
-    extract_tar(file, os.path.join("/tmp/MA5_Recast"))
+    extract_tar(file, os.path.join(folderName, "tmp/MA5_Recast"))
     file = file+ ".tar.gz"
     print(file)
 
@@ -202,13 +202,13 @@ if not os.path.isdir(combined_path):
 
 #for coupling in couplings:
 for ana in analysis_names:
-    XX_path  = os.path.join("/tmp/MA5_Recast/{}_XX_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-    XY_path  = os.path.join("/tmp/MA5_Recast/{}_XY_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-    YYi_path  = os.path.join("/tmp/MA5_Recast/{}_YYi_LO_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, quark, mY, mX, ana))
-    YYQCD_path  = os.path.join("/tmp/MA5_Recast/{}_YYQCD_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-    YYtPP_path  = os.path.join("/tmp/MA5_Recast/{}_YYtPP_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-    YYtPM_path  = os.path.join("/tmp/MA5_Recast/{}_YYtPM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-    YYtMM_path  = os.path.join("/tmp/MA5_Recast/{}_YYtMM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+    XX_path  = os.path.join(main_path, "tmp/MA5_Recast/{}_XX_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+    XY_path  = os.path.join(main_path, "tmp/MA5_Recast/{}_XY_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+    YYi_path  = os.path.join(main_path, "tmp/MA5_Recast/{}_YYi_LO_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, quark, mY, mX, ana))
+    YYQCD_path  = os.path.join(main_path, "tmp/MA5_Recast/{}_YYQCD_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+    YYtPP_path  = os.path.join(main_path, "tmp/MA5_Recast/{}_YYtPP_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+    YYtPM_path  = os.path.join(main_path, "tmp/MA5_Recast/{}_YYtPM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+    YYtMM_path  = os.path.join(main_path, "tmp/MA5_Recast/{}_YYtMM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
 
     xsec_proc  = rescale_xsec_XX + rescale_xsec_XY + rescale_xsec_YYi + rescale_xsec_YYQCD + \
     rescale_xsec_YYtPP + rescale_xsec_YYtPM + rescale_xsec_YYtMM
