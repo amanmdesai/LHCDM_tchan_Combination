@@ -9,11 +9,11 @@ parser.add_argument("--ma5dir", type=str,help='Input file path and Name',default
 parser.add_argument("--wmratio", type=str,help='y/n for fixed wy/my ratio',default="y")
 args = parser.parse_args()
 
-MODELArray = ["S3M"]
+MODELArray = ["S3M", "F3S"]#, "F3V"]
 XMASSArray = [-5, -1, 0, 1, 10, 50, 100, 200, 400, 600, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800, 4000]
 YMASSArray = [0, 200, 400, 600, 800, 1000, 1200, 1300, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800, 4000]
 COUPLINGArray = [1, 3.5]
-QuarkArray = ["d", "s", "u"]
+QuarkArray = ["u"]#["d", "s", "u"]
 OrderArray = ["NLO"]
 proc = "Full"
 
@@ -27,6 +27,7 @@ for my in YMASSArray:
                             mx = mx + my
                         if mx >= my:
                             continue
+                        print("file : ", os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_XX_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz"))
                         if os.path.exists(os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_XX_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz")):
                             job_name = "{}_SM{}_mY{}_mX{}_coup{}.sub".format(model, quark, my, mx, coup)
                             run_name = "{}_SM{}_mY{}_mX{}_coup{}.sh".format(model, quark, my, mx, coup)

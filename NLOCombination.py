@@ -78,6 +78,8 @@ data = []
 data = list(filter(None, data))
 
 data.remove
+
+
 if args.wmratio == "y":
     num_columns = 15  
     columns_data=['my(GeV)', 'mx(GeV)', 'quark', 'wy/my', 'coupling', 'process', 'order', 'lhapdfID', 'CS(pb)', 
