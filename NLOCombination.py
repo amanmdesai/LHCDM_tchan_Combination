@@ -6,6 +6,7 @@ import ma5_expert as ma5
 import pandas as pd
 import shutil
 import os
+import math
 
 # Test command to run
 # python NLOCombination.py --MY 1300 --MX 900 --coup 5 --quark d --order NLO --model F3S 
@@ -102,12 +103,7 @@ float_cols = ['my(GeV)', 'mx(GeV)', 'coupling','CS(pb)','stat(%)', 'scale+(%)', 
 for col in float_cols:
     df[col] = df[col].astype(float)
 
-select_row  = df[(df["my(GeV)"] == mY) & (df["mx(GeV)"] == mX)  & (df['order'] == order)]
-select_row_YYi  = df[(df["my(GeV)"] == mY) & (df["mx(GeV)"] == mX)]
 
-if select_row.empty:
-    print("no point found")
-    sys.exit()
 
 rescale_xsec_XX = 0
 rescale_xsec_XY = 0
@@ -117,13 +113,40 @@ rescale_xsec_YYtPP = 0
 rescale_xsec_YYtPM = 0
 rescale_xsec_YYtMM = 0
 
-rescale_xsec_XX=select_row[select_row["process"] == 'XX']['CShat(pb)'].values[0]*coupling**coupling_power['XX']
-rescale_xsec_XY=select_row[select_row["process"] == 'XY']['CShat(pb)'].values[0]*coupling**coupling_power['XY']
-rescale_xsec_YYi=select_row_YYi[select_row_YYi["process"] == 'YYi']['CShat(pb)'].values[0]*coupling**coupling_power['YYi']
-rescale_xsec_YYQCD=select_row[select_row["process"] == 'YYQCD']['CShat(pb)'].values[0]*coupling**coupling_power['YYQCD']
-rescale_xsec_YYtPP=select_row[select_row["process"] == 'YYtPP']['CShat(pb)'].values[0]*coupling**coupling_power['YYtPP']
-rescale_xsec_YYtPM=select_row[select_row["process"] == 'YYtPM']['CShat(pb)'].values[0]*coupling**coupling_power['YYtPM']
-rescale_xsec_YYtMM=select_row[select_row["process"] == 'YYtMM']['CShat(pb)'].values[0]*coupling**coupling_power['YYtMM']
+select_row = df[(df["my(GeV)"] == mY) & (df["mx(GeV)"] == mX) ]
+select_row_order  = df[(df["my(GeV)"] == mY) & (df["mx(GeV)"] == mX)  & (df["order"] == order)]
+select_row_YYi  = df[(df["my(GeV)"] == mY) & (df["mx(GeV)"] == mX) & (df["process"] == 'YYi') & (df["order"] == 'LO')]
+
+# calculate k factor
+xsec_YYQCD_LO=select_row[(select_row["process"] == 'YYQCD') & (select_row['order'] == 'LO')]['CShat(pb)'].values[0]
+xsec_YYQCD_NLO=select_row[(select_row["process"] == 'YYQCD') & (select_row['order'] == 'NLO')]['CShat(pb)'].values[0]
+
+xsec_YYtPM_LO=select_row[(select_row["process"] == 'YYtPM') & (select_row['order'] == 'LO')]['CShat(pb)'].values[0]
+xsec_YYtPM_NLO=select_row[(select_row["process"] == 'YYtPM') & (select_row['order'] == 'NLO')]['CShat(pb)'].values[0]
+
+if xsec_YYQCD_LO == 0 or xsec_YYtPM_LO == 0:
+    print("missing YYQCD at LO or YYtPM at LO")
+    sys.exit()
+
+
+Kfactor_YYi = math.sqrt((xsec_YYQCD_NLO*xsec_YYtPM_NLO)/(xsec_YYQCD_LO*xsec_YYtPM_LO))
+
+if select_row_order.empty:
+    print("no point found")
+    sys.exit()
+
+if order == "LO":
+    rescale_xsec_YYi = select_row_YYi['CShat(pb)'].values[0]*coupling**coupling_power['YYi']
+elif order == "NLO":
+    rescale_xsec_YYi = select_row_YYi['CShat(pb)'].values[0]*coupling**coupling_power['YYi']*Kfactor_YYi
+
+rescale_xsec_XX=select_row_order[select_row_order["process"] == 'XX']['CShat(pb)'].values[0]*coupling**coupling_power['XX']
+rescale_xsec_XY=select_row_order[select_row_order["process"] == 'XY']['CShat(pb)'].values[0]*coupling**coupling_power['XY']
+rescale_xsec_YYQCD=select_row_order[select_row_order["process"] == 'YYQCD']['CShat(pb)'].values[0]*coupling**coupling_power['YYQCD']
+rescale_xsec_YYtPP=select_row_order[select_row_order["process"] == 'YYtPP']['CShat(pb)'].values[0]*coupling**coupling_power['YYtPP']
+rescale_xsec_YYtPM=select_row_order[select_row_order["process"] == 'YYtPM']['CShat(pb)'].values[0]*coupling**coupling_power['YYtPM']
+rescale_xsec_YYtMM=select_row_order[select_row_order["process"] == 'YYtMM']['CShat(pb)'].values[0]*coupling**coupling_power['YYtMM']
+#rescale_xsec_YYi=select_row_order_YYi[select_row_order_YYi["process"] == 'YYi']['CShat(pb)'].values[0]*coupling**coupling_power['YYi']
 
 # madanalysis expert mode 
 

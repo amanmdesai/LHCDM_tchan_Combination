@@ -9,12 +9,12 @@ parser.add_argument("--ma5dir", type=str,help='Input file path and Name',default
 parser.add_argument("--wmratio", type=str,help='y/n for fixed wy/my ratio',default="y")
 args = parser.parse_args()
 
-MODELArray = ["S3M", "F3S"]#, "F3V"]
+MODELArray = ["S3M", "F3S", "F3V"]
 XMASSArray = [-5, -1, 0, 1, 10, 50, 100, 200, 400, 600, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800, 4000]
 YMASSArray = [0, 200, 400, 600, 800, 1000, 1200, 1300, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800, 4000]
 COUPLINGArray = [1, 3.5]
 QuarkArray = ["u"]#["d", "s", "u"]
-OrderArray = ["NLO"]
+OrderArray = ["LO","NLO"]
 proc = "Full"
 
 for my in YMASSArray:
@@ -29,9 +29,9 @@ for my in YMASSArray:
                             continue
                         print("file : ", os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_XX_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz"))
                         if os.path.exists(os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_XX_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz")):
-                            job_name = "{}_SM{}_mY{}_mX{}_coup{}.sub".format(model, quark, my, mx, coup)
-                            run_name = "{}_SM{}_mY{}_mX{}_coup{}.sh".format(model, quark, my, mx, coup)
-                            if os.path.exists(job_name):
+                            job_name = "{}_SM{}_mY{}_mX{}_order{}_coup{}.sub".format(model, quark, my, mx, order, coup)
+                            run_name = "{}_SM{}_mY{}_mX{}_order{}_coup{}.sh".format(model, quark, my, mx, order, coup)
+                            if os.path.exists(job_name): 
                                 os.system("rm " + job_name)
                             if os.path.exists(run_name):
                                 os.system("rm " + run_name)
@@ -40,7 +40,7 @@ for my in YMASSArray:
                             os.system("echo \#!/bin/bash >> {}".format(run_name))
                             os.system("echo cd /eos/user/a/aman/LHCDM_tchan_Combination >> {}".format(run_name))
                             os.system("echo source py3_env/bin/activate >> {}".format(run_name))
-                            os.system("echo python {}/NLOCombination.py --MY {} --MX {} --coup {} --quark {} --order NLO --model {} --input {} --output {} --wmratio {} >> {}".format(args.programpath, my, mx, coup, quark, model, args.input, args.output, args.wmratio, run_name))
+                            os.system("echo python {}/NLOCombination.py --MY {} --MX {} --coup {} --quark {} --order {} --model {} --input {} --output {} --wmratio {} >> {}".format(args.programpath, my, mx, coup, quark, order, model, args.input, args.output, args.wmratio, run_name))
                             os.system("echo Executable            = {}>> {}".format(run_name, job_name))
                             os.system(f"echo Output                = log/ap.{job_name}.\$\(ClusterId\).\$\(ProcId\).out >> {job_name}")
                             os.system(f"echo Error                 = log/ap.{job_name}.\$\(ClusterId\).\$\(ProcId\).err >> {job_name}")
