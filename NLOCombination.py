@@ -33,6 +33,7 @@ parser.add_argument("--model", type=str,help='Model')
 parser.add_argument("--input", type=str,help='Input file path and Name',default="/eos/user/a/aman/dsb_lowstat/")
 parser.add_argument("--output", type=str,help='Output file path and Name',default="/eos/user/a/aman/LHCDM_tchan_Combination/output/")
 parser.add_argument("--ma5dir", type=str,help='Input file path and Name',default="/eos/user/a/aman/LHCDM_tchan_Combination/madanalysis5")
+parser.add_argument("--process", type=str,help='process: XX, XY, YYQCD, YYtPM, YYsum, or Full',default="Full")
 parser.add_argument("--wmratio", type=str,help='y/n for fixed wy/my ratio',default="y")
 args = parser.parse_args()
 
@@ -44,7 +45,8 @@ order = args.order
 coupling = args.coup
 quark = args.quark
 model = args.model
-proc_study = 'Full'
+proc_study = args.process
+#proc_study = 'Full'
 
 inputfolder = args.input #"/eos/user/a/aman/dsb_lowstat/"
 folderName = os.path.join(inputfolder, "Results_{}_recast".format(model))
@@ -216,10 +218,10 @@ for proc in processes_full:
 
 # Output folder
 
-if proc_study == "Full":
-    combined_path = args.output +  model + "_" + proc_study + "_" + order_file + "_SM"+ quark+ "_MY" + str(mY) + "_MX" + str(mX) + "_coup" + str(coupling) + "_recast" 
-else:
-    combined_path = args.output + name_recast_file 
+#if proc_study == "Full":
+combined_path = args.output +  model + "_" + proc_study + "_" + order_file + "_SM"+ quark+ "_MY" + str(mY) + "_MX" + str(mX) + "_coup" + str(coupling) + "_recast" 
+#else:
+#    combined_path = args.output + name_recast_file 
 
 if not os.path.isdir(combined_path):
     os.system("mkdir -p " + combined_path)
@@ -235,8 +237,23 @@ for ana in analysis_names:
     YYtPM_path  = os.path.join("/tmp/MA5_Recast/{}_YYtPM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
     YYtMM_path  = os.path.join("/tmp/MA5_Recast/{}_YYtMM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
 
-    xsec_proc  = rescale_xsec_XX + rescale_xsec_XY + rescale_xsec_YYi + rescale_xsec_YYQCD + \
-    rescale_xsec_YYtPP + rescale_xsec_YYtPM + rescale_xsec_YYtMM
+    if proc_study == "XX":
+        xsec_proc  = rescale_xsec_XX
+
+    if proc_study == "XY":
+        xsec_proc  = rescale_xsec_XY
+
+    if proc_study == "YYQCD":
+        xsec_proc  = rescale_xsec_YYQCD
+
+    if proc_study == "YYtPM":
+        xsec_proc  = rescale_xsec_YYtPM
+
+    if proc_study == "YYSum":
+        xsec_proc  = rescale_xsec_YYi + rescale_xsec_YYQCD + rescale_xsec_YYtPP + rescale_xsec_YYtPM + rescale_xsec_YYtMM
+
+    if proc_study == "Full":
+        xsec_proc  = rescale_xsec_XX + rescale_xsec_XY + rescale_xsec_YYi + rescale_xsec_YYQCD + rescale_xsec_YYtPP + rescale_xsec_YYtPM + rescale_xsec_YYtMM
     
     xsec = xsec_proc
 
@@ -272,13 +289,34 @@ for ana in analysis_names:
 
     # Reset signal region yields for combined sample
     for reg in regions:
-        regiondata[reg]["Nf"] = XX_collection[reg].final_cut.eff * rescale_xsec_XX + \
-                                XY_collection[reg].final_cut.eff * rescale_xsec_XY + \
-                                YYQCD_collection[reg].final_cut.eff * rescale_xsec_YYQCD + \
-                                YYi_collection[reg].final_cut.eff * rescale_xsec_YYi + \
-                                YYtPP_collection[reg].final_cut.eff * rescale_xsec_YYtPP + \
-                                YYtPM_collection[reg].final_cut.eff * rescale_xsec_YYtPM + \
-                                YYtMM_collection[reg].final_cut.eff * rescale_xsec_YYtMM 
+
+        if proc_study == "XX":
+            regiondata[reg]["Nf"] = XX_collection[reg].final_cut.eff * rescale_xsec_XX 
+
+        if proc_study == "XY":
+            regiondata[reg]["Nf"] = XY_collection[reg].final_cut.eff * rescale_xsec_XY
+
+        if proc_study == "YYQCD":
+            regiondata[reg]["Nf"] = YYQCD_collection[reg].final_cut.eff * rescale_xsec_YYQCD
+
+        if proc_study == "YYtPM":
+            regiondata[reg]["Nf"] = YYtPM_collection[reg].final_cut.eff * rescale_xsec_YYtPM
+
+        if proc_study == "YYSum":
+            regiondata[reg]["Nf"] = YYi_collection[reg].final_cut.eff * rescale_xsec_YYi + \
+                                    YYQCD_collection[reg].final_cut.eff * rescale_xsec_YYQCD + \
+                                    YYtPP_collection[reg].final_cut.eff * rescale_xsec_YYtPP + \
+                                    YYtPM_collection[reg].final_cut.eff * rescale_xsec_YYtPM + \
+                                    YYtMM_collection[reg].final_cut.eff * rescale_xsec_YYtMM 
+
+        if proc_study == "Full":
+            regiondata[reg]["Nf"] = XX_collection[reg].final_cut.eff * rescale_xsec_XX + \
+                                    XY_collection[reg].final_cut.eff * rescale_xsec_XY + \
+                                    YYQCD_collection[reg].final_cut.eff * rescale_xsec_YYQCD + \
+                                    YYi_collection[reg].final_cut.eff * rescale_xsec_YYi + \
+                                    YYtPP_collection[reg].final_cut.eff * rescale_xsec_YYtPP + \
+                                    YYtPM_collection[reg].final_cut.eff * rescale_xsec_YYtPM + \
+                                    YYtMM_collection[reg].final_cut.eff * rescale_xsec_YYtMM 
         regiondata[reg]["N0"] = xsec
     #regiondata[reg]["nb"]=extrapolated_lumi/luminosity*regiondata[reg]["nb"]
     # Calculate exclusion limits
