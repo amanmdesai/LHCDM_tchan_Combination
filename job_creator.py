@@ -16,7 +16,7 @@ COUPLINGArray = [1, 3.5]
 QuarkArray = ["u"]#["d", "s", "u"]
 OrderArray = ["LO","NLO"]
 #proc = "Full"
-process = ["XX", "XY", "YYQCD", "YYtPM", "YYSum", "Full"]
+processArray = ["XX", "XY", "YYQCD", "YYtPM", "YYSum", "Full"]
 
 
 for my in YMASSArray:
@@ -25,7 +25,7 @@ for my in YMASSArray:
             for model in MODELArray:
                 for quark in QuarkArray:
                     for order in OrderArray:
-                        for proc in process:
+                        for proc in processArray:
                             if mx < 0:
                                 mx = mx + my
                             if mx >= my:
