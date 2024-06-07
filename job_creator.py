@@ -15,7 +15,7 @@ YMASSArray = [0, 200, 400, 600, 800, 1000, 1200, 1300, 1400, 1600, 1800, 2000, 2
 COUPLINGArray = [1, 3.5]
 QuarkArray = ["u"]#["d", "s", "u"]
 OrderArray = ["LO","NLO"]
-processArray = ["XX", "XY", "YYQCD", "YYtPM", "YYSum", "Full"]
+processArray = ["XX", "XY", "YYQCD", "YYt", "YYSum", "Full"]
 
 
 for my in YMASSArray:

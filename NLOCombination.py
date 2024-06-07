@@ -33,7 +33,7 @@ parser.add_argument("--model", type=str,help='Model')
 parser.add_argument("--input", type=str,help='Input file path and Name',default="/eos/user/a/aman/dsb_lowstat/")
 parser.add_argument("--output", type=str,help='Output file path and Name',default="/eos/user/a/aman/LHCDM_tchan_Combination/output/")
 parser.add_argument("--ma5dir", type=str,help='Input file path and Name',default="/eos/user/a/aman/LHCDM_tchan_Combination/madanalysis5")
-parser.add_argument("--process", type=str,help='process: XX, XY, YYQCD, YYtPM, YYsum, or Full',default="Full")
+parser.add_argument("--process", type=str,help='process: XX, XY, YYQCD, YYt, YYsum, or Full',default="Full")
 parser.add_argument("--wmratio", type=str,help='y/n for fixed wy/my ratio',default="y")
 args = parser.parse_args()
 
@@ -46,9 +46,8 @@ coupling = args.coup
 quark = args.quark
 model = args.model
 proc_study = args.process
-#proc_study = 'Full'
 
-inputfolder = args.input #"/eos/user/a/aman/dsb_lowstat/"
+inputfolder = args.input 
 folderName = os.path.join(inputfolder, "Results_{}_recast".format(model))
 fileName = "Sigmas/{}_sigmas.dat".format(model)
 
@@ -246,8 +245,8 @@ for ana in analysis_names:
     if proc_study == "YYQCD":
         xsec_proc  = rescale_xsec_YYQCD
 
-    if proc_study == "YYtPM":
-        xsec_proc  = rescale_xsec_YYtPM
+    if proc_study == "YYt":
+        xsec_proc  = rescale_xsec_YYtMM + rescale_xsec_YYtPM + rescale_xsec_YYtPP
 
     if proc_study == "YYSum":
         xsec_proc  = rescale_xsec_YYi + rescale_xsec_YYQCD + rescale_xsec_YYtPP + rescale_xsec_YYtPM + rescale_xsec_YYtMM
@@ -299,8 +298,10 @@ for ana in analysis_names:
         if proc_study == "YYQCD":
             regiondata[reg]["Nf"] = YYQCD_collection[reg].final_cut.eff * rescale_xsec_YYQCD
 
-        if proc_study == "YYtPM":
-            regiondata[reg]["Nf"] = YYtPM_collection[reg].final_cut.eff * rescale_xsec_YYtPM
+        if proc_study == "YYt":
+            regiondata[reg]["Nf"] = YYtPP_collection[reg].final_cut.eff * rescale_xsec_YYtPP + \
+                                    YYtPM_collection[reg].final_cut.eff * rescale_xsec_YYtPM + \
+                                    YYtMM_collection[reg].final_cut.eff * rescale_xsec_YYtMM 
 
         if proc_study == "YYSum":
             regiondata[reg]["Nf"] = YYi_collection[reg].final_cut.eff * rescale_xsec_YYi + \
