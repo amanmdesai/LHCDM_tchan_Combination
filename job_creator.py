@@ -15,7 +15,6 @@ YMASSArray = [0, 200, 400, 600, 800, 1000, 1200, 1300, 1400, 1600, 1800, 2000, 2
 COUPLINGArray = [1, 3.5]
 QuarkArray = ["u"]#["d", "s", "u"]
 OrderArray = ["LO","NLO"]
-#proc = "Full"
 processArray = ["XX", "XY", "YYQCD", "YYtPM", "YYSum", "Full"]
 
 
@@ -51,7 +50,6 @@ for my in YMASSArray:
                                 os.system("echo should_transfer_files   = yes >> {}".format(job_name))
                                 os.system("echo RequestCpus = 1 >> {}".format(job_name))
                                 os.system("echo +JobFlavour = \"\'tomorrow\'\" >> {}".format(job_name))
-                                #os.system("echo +AccountingGroup = \"\'group_u_FCC.local_gen\"\' >> {}".format(job_name))
                                 os.system("echo queue >> {}".format(job_name))
 
                                 name_recast_file = model + "_" + proc + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_coup" + str(coup) + "_recast"
