@@ -68,12 +68,17 @@ options:
 
 python3 job_creator.py --input /eos/user/a/aman/SamplesForAman/d --wmratio n
 
-python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/d --wmratio y --output /eos/user/a/aman/LHCDM_tchan_Combination/output_run14may_d/ --wmratio y
+python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/d  --output /eos/user/a/aman/LHCDM_tchan_Combination/output_d_S3M/ --wmratio y --quark d --model S3M
 
-python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/s --wmratio y --output /eos/user/a/aman/LHCDM_tchan_Combination/output_run14may_s/ --wmratio y
+python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/d  --output /eos/user/a/aman/LHCDM_tchan_Combination/output_d_F3S/ --wmratio y --quark d --model F3S
 
-python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/u --wmratio y --output /eos/user/a/aman/LHCDM_tchan_Combination/output_run14may_u/ --wmratio y
+python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/s --output /eos/user/a/aman/LHCDM_tchan_Combination/output_s_S3M/ --wmratio y --quark s --model S3M
 
-python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/u --wmratio y --output /eos/user/a/aman/LHCDM_tchan_Combination/output_run14may_u/ --wmratio y
+python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/s --output /eos/user/a/aman/LHCDM_tchan_Combination/output_s_F3S/ --wmratio y --quark s --model F3S
+
+python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/u  --output /eos/user/a/aman/LHCDM_tchan_Combination/output_u_S3M/ --wmratio y --quark u --model S3M
+
+python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/u  --output /eos/user/a/aman/LHCDM_tchan_Combination/output_u_F3S/ --wmratio y --quark u --model F3S
+
 
 
