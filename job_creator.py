@@ -28,11 +28,9 @@ os.system(f"mkdir -p {args.model}_{args.quark}")
 
 
 for model in MODELArray:
-    if model == "S3M" and quark== "u":
+    if model == "S3M" and quark == "u":
         COUPLINGArray = [1.0, 3.5]
-    elif model == "S3M" and quark != "u":
-        COUPLINGArray = [1.0]
-    elif model == "F3S" and quark != "u":
+    elif model == "F3S" and quark == "u":
         COUPLINGArray = [1.0, 4.8]
     else: 
         COUPLINGArray = [1.0]
