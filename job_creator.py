@@ -11,33 +11,62 @@ parser.add_argument("--model", type=str,help='model',default="S3M")
 parser.add_argument("--quark", type=str,help='quark',default="u")
 args = parser.parse_args()
 
-#MODELArray = ["S3M"]#, "F3S", "F3V"]
+
 MODELArray = [args.model]
-XMASSArray = [-5, -1, 0, 1, 10, 50, 100, 200, 400, 600, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800, 4000]
-YMASSArray = [0, 200, 400, 600, 800, 1000, 1200, 1300, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800, 4000]
-COUPLINGArray = [1.0, 3.5]
-#QuarkArray = ["d", "s"]#, "u"]
+XMASSArray = [-5, -1, 0, 1, 10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000]
+YMASSArray = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000]
+COUPLINGArray = [1.0]#, 3.5]
 QuarkArray = [args.quark]
 OrderArray = ["LO","NLO"]
 processArray = ["XX", "XY", "YYQCD", "YYt", "YYSum", "Full"]
 
+#MODELArray = ["S3M"]#, "F3S", "F3V"]
+#QuarkArray = ["d", "s"]#, "u"]
 
-for my in YMASSArray:
-    for mx in XMASSArray:
-        for coup in COUPLINGArray:
-            for model in MODELArray:
+
+os.system(f"mkdir -p {args.model}_{args.quark}")
+
+
+for model in MODELArray:
+    if model == "S3M" and quark== "u":
+        COUPLINGArray = [1.0, 3.5]
+    elif model == "S3M" and quark != "u":
+        COUPLINGArray = [1.0]
+    elif model == "F3S" and quark != "u":
+        COUPLINGArray = [1.0, 4.8]
+    else: 
+        COUPLINGArray = [1.0]
+    for coup in COUPLINGArray:  
+        for my in YMASSArray:
+            for mx in XMASSArray:
                 for quark in QuarkArray:
                     os.system(f"mkdir -p log_{quark}_{model}")
                     for order in OrderArray:
                         for proc in processArray:
+                            print("")
+                            print("")
+                            print("+-------------------------------------------------------+")
+                            print("| {:<5} | {:<5} | {:<5} | {:<5} | {:<5} | {:<5} | {:<5} |".format("model", "coup", "mY", "mX", "quark", "order", "proc"))
+                            print("+-------------------------------------------------------+")
+                            print("| {:<5} | {:<5} | {:<5} | {:<5} | {:<5} | {:<5} | {:<5} |".format(model, coup, my, mx, quark, order, proc))
+                            print("+-------------------------------------------------------+")
+                            print("")
+                            print("")
+
+                            #print("model", "coup", "mY", "mX", "quark", "order", "proc")
+                            #print(model, coup, my, mx, quark, order, proc)
                             if mx < 0:
                                 mx = mx + my
                             if mx >= my:
                                 continue
-                            print("file : ", os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_" + proc + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz"))
-                            if os.path.exists(os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_" + proc + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz")):
-                                job_name = "{}_SM{}_mY{}_mX{}_proc{}_order{}_coup{}.sub".format(model, quark, my, mx, proc, order, coup)
-                                run_name = "{}_SM{}_mY{}_mX{}_proc{}_order{}_coup{}.sh".format(model, quark, my, mx, proc, order, coup)
+                            if proc != "Full":
+                                proccheck = proc
+                            else:
+                                proccheck = "XX"
+                            print("file : ", os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_" + proccheck + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz"))
+                            if os.path.exists(os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_" + proccheck + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz")):
+                                job_name = "{}_{}/{}_SM{}_mY{}_mX{}_proc{}_order{}_coup{}.sub".format(model, quark, model, quark, my, mx, proc, order, coup)
+                                run_name = "{}_{}/{}_SM{}_mY{}_mX{}_proc{}_order{}_coup{}.sh".format(model, quark, model, quark, my, mx, proc, order, coup)
                                 if os.path.exists(job_name): 
                                     os.system("rm " + job_name)
                                 if os.path.exists(run_name):
@@ -66,4 +95,4 @@ for my in YMASSArray:
                                 else:
                                     os.system("condor_submit {}".format(job_name))
                             else:
-                                print(os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_XX_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz"), "file does not exists")
+                                print(os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_" + proccheck + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz"), "file does not exists")
