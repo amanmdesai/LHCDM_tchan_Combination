@@ -20,6 +20,8 @@ QuarkArray = [args.quark]
 OrderArray = ["LO","NLO"]
 processArray = ["XX", "XY", "YYQCD", "YYt", "YYSum", "Full"]
 
+os.system(f"rm -rf {args.model}_{args.quark}")
+os.system(f"rm -rf log_{args.quark}_{args.model}")
 os.system(f"mkdir -p {args.model}_{args.quark}")
 
 for model in MODELArray:
@@ -40,7 +42,7 @@ for model in MODELArray:
                     os.system(f"mkdir -p log_{quark}_{model}")
                     for order in OrderArray:
                         for proc in processArray:
-                            if proc != "Full":
+                            if proc != "Full" and proc != "YYSum":
                                 proccheck = proc
                             else:
                                 proccheck = "XX"
