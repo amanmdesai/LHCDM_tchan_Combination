@@ -42,10 +42,12 @@ for model in MODELArray:
                     os.system(f"mkdir -p log_{quark}_{model}")
                     for order in OrderArray:
                         for proc in processArray:
-                            if proc != "Full" and proc != "YYSum":
-                                proccheck = proc
-                            else:
+                            if proc == "Full":
                                 proccheck = "XX"
+                            elif proc == "YYSum" or proc == "YYt":
+                                proccheck = "YYtPM"
+                            else:
+                                proccheck = proc
 
                             print("")
                             print("")
