@@ -20,9 +20,6 @@ QuarkArray = [args.quark]
 OrderArray = ["LO","NLO"]
 processArray = ["XX", "XY", "YYQCD", "YYt", "YYSum", "Full"]
 
-os.system(f"rm -rf {args.model}_{args.quark}")
-os.system(f"rm -rf log_{args.quark}_{args.model}")
-os.system(f"mkdir -p {args.model}_{args.quark}")
 
 for model in MODELArray:
     for quark in QuarkArray:
@@ -32,15 +29,26 @@ for model in MODELArray:
             COUPLINGArray = [1.0, 4.8]
         else: 
             COUPLINGArray = [1.0]
-        for coup in COUPLINGArray:  
-            for my in YMASSArray:
-                for mx in XMASSArray:
-                    if mx < 0:
-                        mx = mx + my
-                    if mx >= my:
-                        continue
-                    os.system(f"mkdir -p log_{quark}_{model}")
+        for my in YMASSArray:
+            for mx in XMASSArray:
+                if mx < 0:
+                    mx = mx + my
+                if mx >= my:
+                    continue
+                if my < 1000:
+                    sety = "set1"
+                elif my > 1000 and my < 2000:
+                    sety = "set2"
+                elif my > 2000 and my < 3000:
+                    sety = "set3"
+                else:
+                    sety = "set4"
+                for coup in COUPLINGArray:  
                     for order in OrderArray:
+                        if not os.path.exists(f"log_{quark}_{model}_{order}_{coup}_{sety}"):
+                            os.makedirs(f"log_{quark}_{model}_{order}_{coup}_{sety}")
+                        if not os.path.exists(f"script_{quark}_{model}_{order}_{coup}"):
+                            os.system(f"mkdir -p script_{quark}_{model}_{order}_{coup}")
                         for proc in processArray:
                             if proc == "Full":
                                 proccheck = "XX"
@@ -62,8 +70,8 @@ for model in MODELArray:
                             print("file : ", os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_" + proccheck + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz"))
 
                             if os.path.exists(os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_" + proccheck + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz")):
-                                job_name = "{}_{}/{}_SM{}_mY{}_mX{}_proc{}_order{}_coup{}.sub".format(model, quark, model, quark, my, mx, proc, order, coup)
-                                run_name = "{}_{}/{}_SM{}_mY{}_mX{}_proc{}_order{}_coup{}.sh".format(model, quark, model, quark, my, mx, proc, order, coup)
+                                job_name = "script_{}_{}_{}_{}/{}_SM{}_mY{}_mX{}_proc{}_order{}_coup{}.sub".format(quark, model, order, coup, model, quark, my, mx, proc, order, coup)
+                                run_name = "script_{}_{}_{}_{}/{}_SM{}_mY{}_mX{}_proc{}_order{}_coup{}.sh".format(quark, model, order, coup, model, quark, my, mx, proc, order, coup)
                                 if os.path.exists(job_name): 
                                     os.system("rm " + job_name)
                                 if os.path.exists(run_name):
@@ -75,12 +83,12 @@ for model in MODELArray:
                                 os.system("echo source py3_env/bin/activate >> {}".format(run_name))
                                 os.system("echo python {}/NLOCombination.py --MY {} --MX {} --coup {} --quark {} --process {} --order {} --model {} --input {} --output {} --wmratio {} >> {}".format(args.programpath, my, mx, coup, quark, proc, order, model, args.input, args.output, args.wmratio, run_name))
                                 os.system("echo Executable            = {}>> {}".format(run_name, job_name))
-                                os.system(f"echo Output                = log_{quark}_{model}/ap.{job_name}.\$\(ClusterId\).\$\(ProcId\).out >> {job_name}")
-                                os.system(f"echo Error                 = log_{quark}_{model}/ap.{job_name}.\$\(ClusterId\).\$\(ProcId\).err >> {job_name}")
-                                os.system(f"echo Log                   = log_{quark}_{model}/ap.{job_name}.\$\(ClusterId\).\$\(ProcId\).log >> {job_name}")
+                                os.system(f"echo Output                = log_{quark}_{model}_{order}_{coup}_{sety}/ap.{job_name}.\$\(ClusterId\).\$\(ProcId\).out >> {job_name}")
+                                os.system(f"echo Error                 = log_{quark}_{model}_{order}_{coup}_{sety}/ap.{job_name}.\$\(ClusterId\).\$\(ProcId\).err >> {job_name}")
+                                os.system(f"echo Log                   = log_{quark}_{model}_{order}_{coup}_{sety}/ap.{job_name}.\$\(ClusterId\).\$\(ProcId\).log >> {job_name}")
                                 os.system("echo should_transfer_files   = yes >> {}".format(job_name))
                                 os.system("echo RequestCpus = 1 >> {}".format(job_name))
-                                os.system("echo +JobFlavour = \"\'tomorrow\'\" >> {}".format(job_name))
+                                os.system("echo +JobFlavour = \"\'workday\'\" >> {}".format(job_name))
                                 os.system("echo queue >> {}".format(job_name))
 
                                 name_recast_file = model + "_" + proc + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_coup" + str(coup) + "_recast"
