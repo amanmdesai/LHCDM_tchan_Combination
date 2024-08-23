@@ -1,4 +1,5 @@
 import os
+import json
 import argparse
 
 parser = argparse.ArgumentParser(prog = 'DMSimpt_Combination',description = '')
@@ -19,7 +20,7 @@ COUPLINGArray = [1.0]
 QuarkArray = [args.quark]
 OrderArray = ["LO","NLO"]
 processArray = ["XX", "XY", "YYQCD", "YYt", "YYSum", "Full"]
-
+defaultanalysis_list = ["atlas_conf_2019_040","atlas_exot_2018_06", "cms_sus_19_006", "cms_exo_20_004", "atlas_susy_2018_17"]
 
 for model in MODELArray:
     for quark in QuarkArray:
@@ -93,10 +94,21 @@ for model in MODELArray:
 
                                 name_recast_file = model + "_" + proc + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_coup" + str(coup) + "_recast"
 
-                                if os.path.exists(os.path.join(args.output, name_recast_file, "CLs_output.dat")):
-                                    print(os.path.join(args.output, name_recast_file, "CLs_output.dat"), "file exists")
-                                    print("skipping")
-                                    continue
+                                if os.path.exists(os.path.join(args.output, name_recast_file, "CLs_output.json")):
+                                    path_json = os.path.join(args.output, name_recast_file, "CLs_output.json")
+                                    file_json = open(path_json)
+                                    try:
+                                        data = json.load(file_json)
+                                        analysis_list = list(data.keys())
+                                        if analysis_list.sort() == defaultanalysis_list.sort():
+                                            print(os.path.join(args.output, name_recast_file, "CLs_output.dat"), "file exists with all analysis")
+                                            print("skipping")
+                                            continue
+                                        else:
+                                            print("need to rerun again for all analysis")
+                                            os.system("condor_submit {}".format(job_name))
+                                    except:
+                                        os.system("condor_submit {}".format(job_name))
                                 else:
                                     os.system("condor_submit {}".format(job_name))
                             else:

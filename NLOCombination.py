@@ -23,7 +23,7 @@ def extract_tar(tar_gz_file, extract_path):
         print(f"Error extracting '{tar_gz_file}': {e}")
 
 
-parser = argparse.ArgumentParser(prog = 'DMSimpt_Combination',description = '')
+parser = argparse.ArgumentParser(prog = 'NLOCombination',description = '')
 parser.add_argument("--MY", type=int,help='mass of DM mediator')
 parser.add_argument("--MX", type=int,help='mass of DM particle')
 parser.add_argument("--coup", type=float,help='Coupling')
@@ -58,7 +58,7 @@ print(mY, mX, order, coupling, quark, model)
 coupling_power = {'XX' : 4, 'XY':2, 'YYi':2, 'YYQCD': 0, 'YYtPP': 4, 'YYtPM': 4, 'YYtMM': 4}
 processes_full = ['XX','XY','YYi','YYQCD','YYtPP','YYtPM','YYtMM']
 PAD4SFS = ["atlas_exot_2018_06"]
-analysis_names = ["atlas_conf_2019_040","atlas_exot_2018_06", "cms_sus_19_006", "cms_exo_20_004"]#, "atlas_susy_2018_17"]
+analysis_names = ["atlas_conf_2019_040","atlas_exot_2018_06", "cms_sus_19_006", "cms_exo_20_004", "atlas_susy_2018_17"]
 luminosity=137
 
 inputfile = os.path.join(folderName,fileName)
@@ -80,7 +80,6 @@ data = []
 data = list(filter(None, data))
 
 data.remove
-
 
 if args.wmratio == "y":
     num_columns = 15  
@@ -105,7 +104,6 @@ for col in float_cols:
     df[col] = df[col].astype(float)
 
 
-
 rescale_xsec_XX = 0
 rescale_xsec_XY = 0
 rescale_xsec_YYi = 0
@@ -120,17 +118,21 @@ select_row_YYi  = df[(df["my(GeV)"] == mY) & (df["mx(GeV)"] == mX) & (df["proces
 
 # calculate k factor
 xsec_YYQCD_LO=select_row[(select_row["process"] == 'YYQCD') & (select_row['order'] == 'LO')]['CShat(pb)'].values[0]
-xsec_YYQCD_NLO=select_row[(select_row["process"] == 'YYQCD') & (select_row['order'] == 'NLO')]['CShat(pb)'].values[0]
 
 xsec_YYtPM_LO=select_row[(select_row["process"] == 'YYtPM') & (select_row['order'] == 'LO')]['CShat(pb)'].values[0]
-xsec_YYtPM_NLO=select_row[(select_row["process"] == 'YYtPM') & (select_row['order'] == 'NLO')]['CShat(pb)'].values[0]
+
+
+if order == "NLO":
+    xsec_YYQCD_NLO=select_row[(select_row["process"] == 'YYQCD') & (select_row['order'] == 'NLO')]['CShat(pb)'].values[0]
+    xsec_YYtPM_NLO=select_row[(select_row["process"] == 'YYtPM') & (select_row['order'] == 'NLO')]['CShat(pb)'].values[0]
 
 if xsec_YYQCD_LO == 0 or xsec_YYtPM_LO == 0:
     print("missing YYQCD at LO or YYtPM at LO")
     sys.exit()
 
 
-Kfactor_YYi = math.sqrt((xsec_YYQCD_NLO*xsec_YYtPM_NLO)/(xsec_YYQCD_LO*xsec_YYtPM_LO))
+if order == "NLO":
+    Kfactor_YYi = math.sqrt((xsec_YYQCD_NLO*xsec_YYtPM_NLO)/(xsec_YYQCD_LO*xsec_YYtPM_LO))
 
 if select_row_order.empty:
     print("no point found")
