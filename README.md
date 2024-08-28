@@ -97,7 +97,10 @@ python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/Gene
 python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/u  --output /eos/user/a/aman/LHCDM_tchan_Combination/output2/output_u_F3V/ --wmratio y --quark u --model F3V
 
 
-+-------------------------------------------------------+
-| F3S   | 4.8   | 3000  | 1000  | u     | NLO   | Full  |
-+-------------------------------------------------------+
+
+python3 job_creator.py --input /eos/project/b/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/b  --output /eos/user/a/aman/LHCDM_tchan_Combination/output2/output_b_S3M/ --wmratio y --quark b --model S3M
+
+python3 job_creator.py --input /eos/project/b/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/b  --output /eos/user/a/aman/LHCDM_tchan_Combination/output2/output_b_F3S/ --wmratio y --quark b --model F3S
+
+python3 job_creator.py --input /eos/project/b/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/b  --output /eos/user/a/aman/LHCDM_tchan_Combination/output2/output_b_F3V/ --wmratio y --quark b --model F3V
 
