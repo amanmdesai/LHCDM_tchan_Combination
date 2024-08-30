@@ -1,6 +1,8 @@
 import os
 import json
 import argparse
+import pandas as pd
+
 
 parser = argparse.ArgumentParser(prog = 'DMSimpt_Combination',description = '')
 parser.add_argument("--input", type=str,help='Input Data file path and Name',default="/eos/user/a/aman/dsb_lowstat/")
@@ -94,13 +96,18 @@ for model in MODELArray:
 
                                 name_recast_file = model + "_" + proc + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_coup" + str(coup) + "_recast"
 
-                                if os.path.exists(os.path.join(args.output, name_recast_file, "CLs_output.json")):
+                                if os.path.exists(os.path.join(args.output, name_recast_file, "CLs_output.dat")):
                                     path_json = os.path.join(args.output, name_recast_file, "CLs_output.json")
                                     file_json = open(path_json)
+                                    path_dat = os.path.join(args.output, name_recast_file, "CLs_output.json")
+                                    file_dat = open(path_dat)
                                     try:
                                         data = json.load(file_json)
                                         analysis_list = list(data.keys())
-                                        if analysis_list.sort() == defaultanalysis_list.sort():
+                                        df = pd.read_csv(file_dat, delimiter=r'\s+')
+                                        unique_dat = df["#"].unique()
+                                        analysis_dat = unique_dat.remove("#")
+                                        if analysis_list.sort() == defaultanalysis_list.sort() and analysis_dat.sort() == defaultanalysis_list.sort():
                                             print(os.path.join(args.output, name_recast_file, "CLs_output.dat"), "file exists with all analysis")
                                             print("skipping")
                                             continue
