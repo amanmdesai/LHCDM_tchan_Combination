@@ -96,28 +96,31 @@ for model in MODELArray:
 
                                 name_recast_file = model + "_" + proc + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_coup" + str(coup) + "_recast"
 
-                                if os.path.exists(os.path.join(args.output, name_recast_file, "CLs_output.dat")):
+                                if os.path.exists(os.path.join(args.output, name_recast_file, "CLs_output.dat")) and os.path.exists(os.path.join(args.output, name_recast_file, "CLs_output.json")):
                                     path_json = os.path.join(args.output, name_recast_file, "CLs_output.json")
                                     file_json = open(path_json)
                                     path_dat = os.path.join(args.output, name_recast_file, "CLs_output.dat")
                                     file_dat = open(path_dat)
-                                    data = json.load(file_json)
-                                    analysis_list = list(data.keys())
-                                    df = pd.read_csv(file_dat, delimiter=r'\s+')
-                                    unique_dat = list(df["#"].unique())
-                                    if "#" in unique_dat:
-                                        unique_dat.remove("#") 
-                                    analysis_dat = unique_dat
-                                    defaultanalysis_list.sort()
-                                    analysis_dat.sort()
-                                    analysis_list.sort()
-                                    if len(analysis_dat) > 0:
-                                        #if analysis_list == defaultanalysis_list and analysis_dat == defaultanalysis_list:
-                                        print(os.path.join(args.output, name_recast_file, "CLs_output.dat"), "file exists with analysis")
-                                        print("skipping")
-                                        continue
-                                    else:
-                                        print("need to rerun again for all analysis")
+                                    try:
+                                        data = json.load(file_json)
+                                        analysis_list = list(data.keys())
+                                        df = pd.read_csv(file_dat, delimiter=r'\s+')
+                                        unique_dat = list(df["#"].unique())
+                                        if "#" in unique_dat:
+                                            unique_dat.remove("#") 
+                                        analysis_dat = unique_dat
+                                        defaultanalysis_list.sort()
+                                        analysis_dat.sort()
+                                        analysis_list.sort()
+                                        if len(analysis_dat) > 0:
+                                            #if analysis_list == defaultanalysis_list and analysis_dat == defaultanalysis_list:
+                                            print(os.path.join(args.output, name_recast_file, "CLs_output.dat"), "file exists with analysis")
+                                            print("skipping")
+                                            continue
+                                        else:
+                                            print("need to rerun again for all analysis")
+                                            os.system("condor_submit {}".format(job_name))
+                                    except:
                                         os.system("condor_submit {}".format(job_name))
                                 else:
                                     os.system("condor_submit {}".format(job_name))
