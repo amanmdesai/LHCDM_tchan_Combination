@@ -111,11 +111,9 @@ for model in MODELArray:
                                     defaultanalysis_list.sort()
                                     analysis_dat.sort()
                                     analysis_list.sort()
-                                    print("default ", defaultanalysis_list)
-                                    print("dat ", analysis_dat)
-                                    print("json ", analysis_list)
-                                    if analysis_list == defaultanalysis_list and analysis_dat == defaultanalysis_list:
-                                        print(os.path.join(args.output, name_recast_file, "CLs_output.dat"), "file exists with all analysis")
+                                    if len(analysis_dat) > 0:
+                                        #if analysis_list == defaultanalysis_list and analysis_dat == defaultanalysis_list:
+                                        print(os.path.join(args.output, name_recast_file, "CLs_output.dat"), "file exists with analysis")
                                         print("skipping")
                                         continue
                                     else:
