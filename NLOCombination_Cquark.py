@@ -15,7 +15,7 @@ def extract_tar(tar_gz_file, extract_path):
     print(os.path.join(extract_path,tar_gz_file))
     if os.path.exists(os.path.join(extract_path,tar_gz_file)):
         return 0
-    tar_gz_file=tar_gz_file+".tar.gz"
+    #tar_gz_file=tar_gz_file#+".tar.gz"
     try:
         shutil.unpack_archive(tar_gz_file, extract_path, 'gztar')
         print(f"Successfully extracted '{tar_gz_file}' to '{extract_path}'.")
@@ -136,8 +136,6 @@ rescale_xsec_YYtMM=select_row_order[select_row_order["process"] == 'YYtMM']['CSh
 #rescale_xsec_YYi=select_row_order_YYi[select_row_order_YYi["process"] == 'YYi']['CShat(pb)'].values[0]*coupling**coupling_power['YYi']
 
 
-
-
 ###  code same as previous code 
 
 # madanalysis expert mode 
@@ -190,14 +188,25 @@ for proc in processes_full:
 
     if proc == "YYi":
         order_file = "LO"
+        dataset = select_row_YYi
     else:
         order_file = order
+        dataset = select_row_order
+    #reconstructing the name of the file
 
-    name_recast_file =  + "_" + proc + "_" + order_file + "_SM"+ quark + "_MY" + str(mY) + "_MX" + str(mX)  + "_recast"
-        
-    file = os.path.join(main_path, model+"_"+proc, order, "MA5_Recast",name_recast_file)
+
+    ypdg = dataset[dataset["process"] == proc]["YPDG"].values[0]
+    xpdg = dataset[dataset["process"] == proc]["XPDG"].values[0]
+    namecoupling = dataset[dataset["process"] == proc]["coupling_name"].values[0]
+    original_coupling = dataset[dataset["process"] == proc]["coupling"].values[0]
+    original_xs = dataset[dataset["process"] == proc]["CS(pb)"].values[0]
+    tag = dataset[dataset["process"] == proc]["FileExtension"].values[0]
+
+    name_recast_file = ypdg + "_" + str(int(mY)) + ".0_" + xpdg + "_" + str(int(mX)) + ".0_" + namecoupling + "_" + str(original_coupling) + "_xs_" + str(original_xs) + "_tag_" + str(tag)
+
+    file = os.path.join(main_path, model+"_"+proc, order, name_recast_file)#"MA5_Recast",name_recast_file)
     extract_tar(file, os.path.join("/tmp/MA5_Recast"))
-    file = file+ ".tar.gz"
+
     print(file)
 
     if os.path.exists(file):

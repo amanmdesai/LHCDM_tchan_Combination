@@ -86,4 +86,9 @@ rescale_xsec_YYtPP=select_row_order[select_row_order["process"] == 'YYtPP']['CSh
 rescale_xsec_YYtPM=select_row_order[select_row_order["process"] == 'YYtPM']['CShat(pb)'].values[0]*coupling**coupling_power['YYtPM']
 rescale_xsec_YYtMM=select_row_order[select_row_order["process"] == 'YYtMM']['CShat(pb)'].values[0]*coupling**coupling_power['YYtMM']
 #rescale_xsec_YYi=select_row_order_YYi[select_row_order_YYi["process"] == 'YYi']['CShat(pb)'].values[0]*coupling**coupling_power['YYi']
-print(select_row_order[select_row_order["process"] == 'YYtMM'])#['CShat(pb)'])
+
+print(select_row_order[select_row_order["process"] == 'YYtMM']["XPDG"])
+
+print(select_row_order[select_row_order["process"] == 'YYtMM']["FileExtension"])
+
+

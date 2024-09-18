@@ -104,3 +104,8 @@ python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/Gene
 
 python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/b  --output /eos/user/a/aman/LHCDM_tchan_Combination/output2/output_b_F3V/ --wmratio y --quark b --model F3V
 
+
+
+
+
+python /eos/user/a/aman/LHCDM_tchan_Combination/NLOCombination_Cquark.py --MY 1300 --MX 900 --coup 1.0 --quark c --process XY --order LO --model S3M --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/c --output /eos/user/a/aman/LHCDM_tchan_Combination/output2/output_c_S3M/ --wmratio y
