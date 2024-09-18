@@ -65,54 +65,28 @@ luminosity=137
 # --wmratio y --quark b --model F3S
 
 
-# below code needs modification 
-"""
+
 inputfolder = args.input 
-folderName = os.path.join(inputfolder, "Results_{}_recast".format(model))
-fileName = "Sigmas/{}_sigmas.dat".format(model)
 
-inputfile = os.path.join(folderName,fileName)
+inputfile = os.path.join(inputfolder, "Sigmas.csv")
 
-# Define the file path
-file_path = inputfile
+#folderName = os.path.join(inputfolder, "Results_{}_recast".format(model))
 
-# Read the file content
-with open(file_path, 'r') as file:
-    content = file.read()
-
-# Replace all pipe symbols with spaces
-raw_data = content.replace('|', ' ')
-raw_data=raw_data.split(" ")
-raw_data = [x for x in raw_data if x.strip()]
-
-data = []
-[data.extend(s.split('\n')) for s in raw_data]
-data = list(filter(None, data))
-
-data.remove
-
-if args.wmratio == "y":
-    num_columns = 15  
-    columns_data=['my(GeV)', 'mx(GeV)', 'quark', 'wy/my', 'coupling', 'process', 'order', 'lhapdfID', 'CS(pb)', 
-                                        'stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)']
-elif args.wmratio == "n":
-    num_columns = 14
-    columns_data=['my(GeV)', 'mx(GeV)', 'coupling', 'quark', 'process', 'order', 'lhapdfID', 'CS(pb)', 
-                                        'stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)']
-num_rows = len(data) // num_columns  # Calculate the number of rows
-data_rows = [data[i:i+num_columns] for i in range(0, len(data), num_columns)]
+columns_data = [
+    'quark', 'model', 'process', 'order',  'YPDG', 'my(GeV)', 'XPDG', 'mx(GeV)', 'coupling_name', 'coupling', 'XS', 'CS(pb)', 'Tag', 'FileExtension'
+]
 
 
-# Convert the 2D list into a Pandas DataFrame
-df = pd.DataFrame(data_rows, columns=columns_data)
+df = pd.read_csv(inputfile)#, columns=columns_data)
+#df = df.drop(columns=['YPDG', 'XPDG', 'coupling_name', 'XS', 'Tag', 'FileExtension'])
 
-df = df.drop(df.index[0])
+df['CShat(pb)'] = df['CS(pb)']/df['coupling']
 
-float_cols = ['my(GeV)', 'mx(GeV)', 'coupling','CS(pb)','stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)']
+df = df.replace('YYt', 'YYtPP')
+df = df.replace('YYbt', 'YYtPM')
+df = df.replace('YbYbt', 'YYtMM')
 
-for col in float_cols:
-    df[col] = df[col].astype(float)
-
+df = df[df["model"] == model]
 
 rescale_xsec_XX = 0
 rescale_xsec_XY = 0
@@ -163,7 +137,7 @@ rescale_xsec_YYtMM=select_row_order[select_row_order["process"] == 'YYtMM']['CSh
 
 
 
-"""
+
 ###  code same as previous code 
 
 # madanalysis expert mode 
@@ -208,7 +182,7 @@ print(f"has PAD: {main.session_info.has_pad}\n"
 
 ma5.BackendManager.set_madanalysis_backend(args.ma5dir)
 
-main_path = folderName
+main_path = inputfolder
 
 # Samples to be combined. Each set of samples are generated and stored in separate directories
 
@@ -219,9 +193,9 @@ for proc in processes_full:
     else:
         order_file = order
 
-    name_recast_file = model + "_" + proc + "_" + order_file + "_SM"+ quark + "_MY" + str(mY) + "_MX" + str(mX)  + "_recast"
-
-    file = os.path.join(folderName, "MA5_Recast",name_recast_file)
+    name_recast_file =  + "_" + proc + "_" + order_file + "_SM"+ quark + "_MY" + str(mY) + "_MX" + str(mX)  + "_recast"
+        
+    file = os.path.join(main_path, model+"_"+proc, order, "MA5_Recast",name_recast_file)
     extract_tar(file, os.path.join("/tmp/MA5_Recast"))
     file = file+ ".tar.gz"
     print(file)
