@@ -59,26 +59,25 @@ luminosity=137
 
 
 
-#python3 job_creator.py 
-# --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/b  
-# --output /eos/user/a/aman/LHCDM_tchan_Combination/output2/output_b_F3S/ 
-# --wmratio y --quark b --model F3S
-
-
-
 inputfolder = args.input 
 
-inputfile = os.path.join(inputfolder, "Sigmas.csv")
+inputfile = os.path.join(inputfolder, "{}_Sigmas.csv".format(model))
 
 #folderName = os.path.join(inputfolder, "Results_{}_recast".format(model))
 
 columns_data = [
-    'quark', 'model', 'process', 'order',  'YPDG', 'my(GeV)', 'XPDG', 'mx(GeV)', 'coupling_name', 'coupling', 'XS', 'CS(pb)', 'Tag', 'FileExtension'
+    'quark', 'model', 'process', 'order',  'YPDG', 'my(GeV)', 'coupling_name', 'coupling', 
+    'XPDG', 'mx(GeV)', 'XS', 'CS(pb)', 'tag', 'FileExtension'
 ]
 
 
 df = pd.read_csv(inputfile)#, columns=columns_data)
 #df = df.drop(columns=['YPDG', 'XPDG', 'coupling_name', 'XS', 'Tag', 'FileExtension'])
+
+float_cols = ['my(GeV)', 'mx(GeV)', 'coupling','CS(pb)']
+
+for col in float_cols:
+    df[col] = df[col].astype(float)
 
 df['CShat(pb)'] = df['CS(pb)']/df['coupling']
 
@@ -88,6 +87,7 @@ df = df.replace('YbYbt', 'YYtMM')
 
 df = df[df["model"] == model]
 
+print(df)
 rescale_xsec_XX = 0
 rescale_xsec_XY = 0
 rescale_xsec_YYi = 0
@@ -101,7 +101,12 @@ select_row_order  = df[(df["my(GeV)"] == mY) & (df["mx(GeV)"] == mX)  & (df["ord
 select_row_YYi  = df[(df["my(GeV)"] == mY) & (df["mx(GeV)"] == mX) & (df["process"] == 'YYi') & (df["order"] == 'LO')]
 
 # calculate k factor
+print(" here " , select_row[(select_row["process"] == 'YYQCD') & (select_row['order'] == 'LO')]['CShat(pb)'])
+
+"""
+
 xsec_YYQCD_LO=select_row[(select_row["process"] == 'YYQCD') & (select_row['order'] == 'LO')]['CShat(pb)'].values[0]
+
 
 xsec_YYtPM_LO=select_row[(select_row["process"] == 'YYtPM') & (select_row['order'] == 'LO')]['CShat(pb)'].values[0]
 
@@ -202,7 +207,7 @@ for proc in processes_full:
     original_xs = dataset[dataset["process"] == proc]["CS(pb)"].values[0]
     tag = dataset[dataset["process"] == proc]["FileExtension"].values[0]
 
-    name_recast_file = ypdg + "_" + str(int(mY)) + ".0_" + xpdg + "_" + str(int(mX)) + ".0_" + namecoupling + "_" + str(original_coupling) + "_xs_" + str(original_xs) + "_tag_" + str(tag)
+    name_recast_file = ypdg + "_" + str(int(mY)) + ".0_" + xpdg + "_" + str(int(mX)) + ".0_" + namecoupling + "_" + str(original_coupling) + "_xs_" + str(original_xs) + str(tag) + ".tar.gz"
 
     file = os.path.join(main_path, model+"_"+proc, order, name_recast_file)#"MA5_Recast",name_recast_file)
     extract_tar(file, os.path.join("/tmp/MA5_Recast"))
@@ -337,3 +342,4 @@ for ana in analysis_names:
     name="MY"+str(mY)+"_MX"+str(mX)+"_coup"+str(coupling)+"_xsec="+str(xsec)
     with open(os.path.join(combined_path, "done"), "a+") as d:
         d.write(f"{name}\n")
+"""
