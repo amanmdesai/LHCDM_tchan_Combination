@@ -34,13 +34,15 @@ data_list = find_tar_gz_files(base_path, pattern)
 
 
 column_titles_F3S = [
-    'quark', 'model', 'process', 'order',  'YPDG', 'my(GeV)', 'coupling_name', 'coupling', 
-    'XPDG', 'mx(GeV)', 'XS', 'CS(pb)', 'tag', 'FileExtension'
+    'quark', 'model', 'process', 'order',  'YPDG', 'my(GeV)', 
+    'coupling_name', 'coupling', 'XPDG', 'mx(GeV)', 'XS', 'CS(pb)', 
+    'tag', 'FileExtension'
     ]
 
 column_titles_other = [
     'quark', 'model', 'process', 'order',  'YPDG', 'my(GeV)',  
-    'XPDG', 'mx(GeV)', 'coupling_name', 'coupling', 'XS', 'CS(pb)', 'tag', 'FileExtension'
+    'XPDG', 'mx(GeV)', 'coupling_name', 'coupling', 'XS', 'CS(pb)', 
+    'tag', 'FileExtension'
     ]
 
 

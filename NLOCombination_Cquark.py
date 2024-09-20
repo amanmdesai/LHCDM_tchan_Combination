@@ -66,8 +66,9 @@ inputfile = os.path.join(inputfolder, "{}_Sigmas.csv".format(model))
 #folderName = os.path.join(inputfolder, "Results_{}_recast".format(model))
 
 columns_data = [
-    'quark', 'model', 'process', 'order',  'YPDG', 'my(GeV)', 'coupling_name', 'coupling', 
-    'XPDG', 'mx(GeV)', 'XS', 'CS(pb)', 'tag', 'FileExtension'
+    'quark', 'model', 'process', 'order',  'YPDG', 'my(GeV)', 
+    'coupling_name', 'coupling', 'XPDG', 'mx(GeV)', 'XS', 'CS(pb)', 
+    'tag', 'FileExtension'
 ]
 
 

@@ -70,9 +70,11 @@ for model in MODELArray:
                             print("")
                             print("")
 
-                            print("file : ", os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_" + proccheck + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz"))
+                            if quark != 'c':
 
-                            if os.path.exists(os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_" + proccheck + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz")):
+                                print("file : ", os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_" + proccheck + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz"))
+
+                            if (quark != 'c' and os.path.exists(os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_" + proccheck + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz"))) or (quark == 'c'):
                                 job_name = "script_{}_{}_{}_{}/{}_SM{}_mY{}_mX{}_proc{}_order{}_coup{}.sub".format(quark, model, order, coup, model, quark, my, mx, proc, order, coup)
                                 run_name = "script_{}_{}_{}_{}/{}_SM{}_mY{}_mX{}_proc{}_order{}_coup{}.sh".format(quark, model, order, coup, model, quark, my, mx, proc, order, coup)
                                 if os.path.exists(job_name): 
@@ -84,7 +86,10 @@ for model in MODELArray:
                                 os.system("echo \#!/bin/bash >> {}".format(run_name))
                                 os.system("echo cd /eos/user/a/aman/LHCDM_tchan_Combination >> {}".format(run_name))
                                 os.system("echo source py3_env/bin/activate >> {}".format(run_name))
-                                os.system("echo python {}/NLOCombination.py --MY {} --MX {} --coup {} --quark {} --process {} --order {} --model {} --input {} --output {} --wmratio {} >> {}".format(args.programpath, my, mx, coup, quark, proc, order, model, args.input, args.output, args.wmratio, run_name))
+                                if quark == 'c':
+                                    os.system("echo python {}/NLOCombination_Cquark.py --MY {} --MX {} --coup {} --quark {} --process {} --order {} --model {} --input {} --output {} --wmratio {} >> {}".format(args.programpath, my, mx, coup, quark, proc, order, model, args.input, args.output, args.wmratio, run_name))
+                                else:
+                                    os.system("echo python {}/NLOCombination.py --MY {} --MX {} --coup {} --quark {} --process {} --order {} --model {} --input {} --output {} --wmratio {} >> {}".format(args.programpath, my, mx, coup, quark, proc, order, model, args.input, args.output, args.wmratio, run_name))
                                 os.system("echo Executable            = {}>> {}".format(run_name, job_name))
                                 os.system(f"echo Output                = log_{quark}_{model}_{order}_{coup}_{sety}/ap.{job_name}.\$\(ClusterId\).\$\(ProcId\).out >> {job_name}")
                                 os.system(f"echo Error                 = log_{quark}_{model}_{order}_{coup}_{sety}/ap.{job_name}.\$\(ClusterId\).\$\(ProcId\).err >> {job_name}")
