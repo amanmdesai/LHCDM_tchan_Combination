@@ -16,15 +16,15 @@ args = parser.parse_args()
 
 
 MODELArray = [args.model]
-XMASSArray = [-5, -1, 0, 1, 10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000]
-YMASSArray = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000]
+XMASSArray = [-5, -1, 1, 10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000]
+YMASSArray = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000]
 COUPLINGArray = [1.0]
 QuarkArray = [args.quark]
 OrderArray = ["LO","NLO"]
 processArray = ["XX", "XY", "YYQCD", "YYt", "YYSum", "Full"]
 defaultanalysis_list = ["atlas_conf_2019_040","atlas_exot_2018_06", "cms_sus_19_006", "cms_exo_20_004", "atlas_susy_2018_17"]
 
-fmissingpoints = '/eos/user/a/aman/LHCDM_tchan_Combination/'+ args.model + "_" + args.quark + "_missingPoints.tsv"                                
+fmissingpoints = '/eos/user/a/aman/LHCDM_tchan_Combination/'+ args.model + "_" + args.quark + "_missingPoints.dat"                                
 
 missingpoints = []
 
@@ -52,7 +52,9 @@ for model in MODELArray:
                     sety = "set3"
                 else:
                     sety = "set4"
-                for coup in COUPLINGArray:  
+                for coup in COUPLINGArray:
+                    if model == "F3V":
+                        OrderArray = ["LO"]  
                     for order in OrderArray:
                         if not os.path.exists(f"log_{quark}_{model}_{order}_{coup}_{sety}"):
                             os.makedirs(f"log_{quark}_{model}_{order}_{coup}_{sety}")
