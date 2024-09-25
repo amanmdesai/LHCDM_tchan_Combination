@@ -2,7 +2,7 @@ import os
 import json
 import argparse
 import pandas as pd
-
+import csv
 
 parser = argparse.ArgumentParser(prog = 'DMSimpt_Combination',description = '')
 parser.add_argument("--input", type=str,help='Input Data file path and Name',default="/eos/user/a/aman/dsb_lowstat/")
@@ -23,6 +23,12 @@ QuarkArray = [args.quark]
 OrderArray = ["LO","NLO"]
 processArray = ["XX", "XY", "YYQCD", "YYt", "YYSum", "Full"]
 defaultanalysis_list = ["atlas_conf_2019_040","atlas_exot_2018_06", "cms_sus_19_006", "cms_exo_20_004", "atlas_susy_2018_17"]
+
+fmissingpoints = '/eos/user/a/aman/LHCDM_tchan_Combination/'+ args.model + "_" + args.quark + "_missingPoints.tsv"                                
+
+missingpoints = []
+
+missingpoints.append(["Process", "Quark", "Order", "model", "massY","massX"])
 
 for model in MODELArray:
     for quark in QuarkArray:
@@ -131,3 +137,10 @@ for model in MODELArray:
                                     os.system("condor_submit {}".format(job_name))
                             else:
                                 print(os.path.join(args.input, "Results_"+model+"_recast","MA5_Recast", model + "_" + proccheck + "_" + order + "_SM"+ quark + "_MY" + str(my) + "_MX" + str(mx) + "_recast.tar.gz"), "file does not exists")
+                                missingpoints.append([proc, quark, order, model, my, mx]) 
+
+
+
+with open(fmissingpoints, 'w', newline="") as file:
+    writer = csv.writer(file, delimiter='\t')
+    writer.writerows(missingpoints)

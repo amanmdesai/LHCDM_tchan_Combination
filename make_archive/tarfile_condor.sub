@@ -1,0 +1,9 @@
+Executable            = tarfile.sh
+Output                = log/ap.$(ClusterId).$(ProcId).out
+Error                 = log/ap.$(ClusterId).$(ProcId).err
+Log                   = log/ap.$(ClusterId).log
+should_transfer_files   = IF_NEEDED
+when_to_transfer_output = ON_EXIT
+RequestCpus = 8
++JobFlavour = "tomorrow"
+queue
