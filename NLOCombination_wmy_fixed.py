@@ -89,11 +89,27 @@ elif args.wmratio == "n":
     num_columns = 14
     columns_data=['my(GeV)', 'mx(GeV)', 'coupling', 'quark', 'process', 'order', 'lhapdfID', 'CS(pb)', 
                                         'stat(%)', 'scale+(%)', 'scale-(%)', 'PDF+(%)', 'PDF-(%)', 'CShat(pb)']
-        
-
-
 num_rows = len(data) // num_columns  # Calculate the number of rows
 data_rows = [data[i:i+num_columns] for i in range(0, len(data), num_columns)]
+
+
+
+"""
+    if [[ $model == "S3D" || $model == "S3M" ]]; then
+      coupling=$(echo "4*${my}^2*sqrt(${wmy})/sqrt((${mx}^4 - 2*${mx}^2*${my}^2 + ${my}^4)/${pi})" | bc -l)
+#       echo "coupling = ${coupling}"
+    fi
+    
+    if [[ $model == "F3S" || $model == "F3C" ]]; then
+      coupling=$(echo "4*${my}^2*sqrt(2*${wmy})/sqrt((${mx}^4 - 2*${mx}^2*${my}^2 + ${my}^4)/${pi})" | bc -l)
+#       echo "coupling = ${coupling}"
+    fi
+    
+    if [[ $model == "F3V" || $model == "F3W" ]]; then
+      coupling=$(echo "4*${mx}*${my}^2*sqrt(2*${wmy})/sqrt((2*${mx}^6 - 3*${mx}^4*${my}^2 + ${my}^6)/${pi})" | bc -l)
+#       echo "coupling = ${coupling}"
+
+"""
 
 
 # Convert the 2D list into a Pandas DataFrame
