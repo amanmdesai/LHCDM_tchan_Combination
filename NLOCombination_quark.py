@@ -27,7 +27,7 @@ parser = argparse.ArgumentParser(prog = 'NLOCombination',description = '')
 parser.add_argument("--MY", type=int,help='mass of DM mediator')
 parser.add_argument("--MX", type=int,help='mass of DM particle')
 parser.add_argument("--coup", type=float,help='Coupling')
-parser.add_argument("--quark", type=str,help='Quark')
+#parser.add_argument("--quark", type=str,help='Quark')
 parser.add_argument("--order", type=str,help='order')
 parser.add_argument("--model", type=str,help='Model')
 parser.add_argument("--input", type=str,help='Input file path and Name',default="/eos/user/a/aman/dsb_lowstat/")
@@ -43,7 +43,7 @@ mY = args.MY
 mX = args.MX
 order = args.order
 coupling = args.coup
-quarks = args.quark
+quarks = ['u','d']#args.quark
 model = args.model
 proc_study = args.process
 
@@ -65,17 +65,19 @@ rescale_xsec_YYtPP = [0]*len(quarks)
 rescale_xsec_YYtPM = [0]*len(quarks)
 rescale_xsec_YYtMM = [0]*len(quarks)
 
+folderName = [0,0]
+
 for i, quark in enumerate(quarks):
 
     inputfolder = os.path.join(args.input, quark) 
-    folderName = os.path.join(inputfolder, "Results_{}_recast".format(model))
+    folderName[i] = os.path.join(inputfolder, "Results_{}_recast".format(model))
     fileName = "Sigmas/{}_sigmas.dat".format(model)
 
     print("Summary of inputs")
     print("mY mX order coupling quark model")
     print(mY, mX, order, coupling, quark, model)
 
-    inputfile = os.path.join(folderName,fileName)
+    inputfile = os.path.join(folderName[i],fileName)
 
     # Define the file path
     file_path = inputfile
@@ -148,9 +150,9 @@ for i, quark in enumerate(quarks):
         sys.exit()
 
     if order == "LO":
-        rescale_xsec_YYi = select_row_YYi['CShat(pb)'].values[0]*coupling**coupling_power['YYi']
+        rescale_xsec_YYi[i] = select_row_YYi['CShat(pb)'].values[0]*coupling**coupling_power['YYi']
     elif order == "NLO":
-        rescale_xsec_YYi = select_row_YYi['CShat(pb)'].values[0]*coupling**coupling_power['YYi']*Kfactor_YYi
+        rescale_xsec_YYi[i] = select_row_YYi['CShat(pb)'].values[0]*coupling**coupling_power['YYi']*Kfactor_YYi
 
     rescale_xsec_XX[i]=select_row_order[select_row_order["process"] == 'XX']['CShat(pb)'].values[0]*coupling**coupling_power['XX']
     rescale_xsec_XY[i]=select_row_order[select_row_order["process"] == 'XY']['CShat(pb)'].values[0]*coupling**coupling_power['XY']
@@ -161,6 +163,7 @@ for i, quark in enumerate(quarks):
 #rescale_xsec_YYi=select_row_order_YYi[select_row_order_YYi["process"] == 'YYi']['CShat(pb)'].values[0]*coupling**coupling_power['YYi']
 
 # madanalysis expert mode 
+
 
 ma5dir = args.ma5dir 
 if not os.path.isdir(ma5dir):
@@ -202,11 +205,10 @@ print(f"has PAD: {main.session_info.has_pad}\n"
 
 ma5.BackendManager.set_madanalysis_backend(args.ma5dir)
 
-main_path = folderName
 
 # Samples to be combined. Each set of samples are generated and stored in separate directories
 
-for quark in quarks:
+for i,quark in enumerate(quarks):
     for proc in processes_full:
 
         if proc == "YYi":
@@ -216,7 +218,7 @@ for quark in quarks:
 
         name_recast_file = model + "_" + proc + "_" + order_file + "_SM"+ quark + "_MY" + str(mY) + "_MX" + str(mX)  + "_recast"
 
-        file = os.path.join(folderName, "MA5_Recast",name_recast_file)
+        file = os.path.join(folderName[i], "MA5_Recast",name_recast_file)
         extract_tar(file, os.path.join("/tmp/MA5_Recast"))
         file = file+ ".tar.gz"
         print(file)
@@ -287,7 +289,7 @@ for ana in analysis_names:
             xsec_proc  += rescale_xsec_XX[i] + rescale_xsec_XY[i] + rescale_xsec_YYi[i] + rescale_xsec_YYQCD[i] + rescale_xsec_YYtPP[i] + rescale_xsec_YYtPM[i] + rescale_xsec_YYtMM[i]
     
   
-        XX_collection[i]  = ma5.cutflow.Collection(XX_path[i],  xsection = rescale_xsec_XX[i],  lumi = luminosity,)
+        XX_collection[i] = ma5.cutflow.Collection(XX_path[i],  xsection = rescale_xsec_XX[i],  lumi = luminosity,)
         XY_collection[i]  = ma5.cutflow.Collection(XY_path[i],  xsection = rescale_xsec_XY[i],  lumi = luminosity,)
         YYi_collection[i]  = ma5.cutflow.Collection(YYi_path[i],  xsection = rescale_xsec_YYi[i],  lumi = luminosity,)
         YYQCD_collection[i] = ma5.cutflow.Collection(YYQCD_path[i], xsection = rescale_xsec_YYQCD[i],  lumi = luminosity,)
@@ -320,9 +322,11 @@ for ana in analysis_names:
 
     lumi, regions, regiondata = run_recast.parse_info_file(ET,analysis,extrapolated_lumi)
 
+    print(regiondata)
     for i, quark in enumerate(quarks):
         # Reset signal region yields for combined sample
         for reg in regions:
+            print(regiondata[reg])
 
             if proc_study == "XX":
                 regiondata[reg]["Nf"] += XX_collection[i][reg].final_cut.eff * rescale_xsec_XX[i]
