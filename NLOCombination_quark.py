@@ -51,7 +51,7 @@ proc_study = args.process
 coupling_power = {'XX' : 4, 'XY':2, 'YYi':2, 'YYQCD': 0, 'YYtPP': 4, 'YYtPM': 4, 'YYtMM': 4}
 processes_full = ['XX','XY','YYi','YYQCD','YYtPP','YYtPM','YYtMM']
 PAD4SFS = ["atlas_exot_2018_06"]
-analysis_names = ["atlas_conf_2019_040","atlas_exot_2018_06", "cms_sus_19_006", "cms_exo_20_004", "atlas_susy_2018_17"]
+analysis_names = ["atlas_conf_2019_040","atlas_exot_2018_06", "cms_sus_19_006", "cms_exo_20_004"]#, "atlas_susy_2018_17"]
 luminosity=137
 
 # need to add quark information here
@@ -322,11 +322,15 @@ for ana in analysis_names:
 
     lumi, regions, regiondata = run_recast.parse_info_file(ET,analysis,extrapolated_lumi)
 
-    print(regiondata)
+    print(regions, regiondata)
     for i, quark in enumerate(quarks):
         # Reset signal region yields for combined sample
+        print(quark, regions)
         for reg in regions:
-            print(regiondata[reg])
+            if i == 0:
+                regiondata[reg]["Nf"] = 0 
+                regiondata[reg]["N0"] = 0 
+                
 
             if proc_study == "XX":
                 regiondata[reg]["Nf"] += XX_collection[i][reg].final_cut.eff * rescale_xsec_XX[i]

@@ -124,3 +124,8 @@ python3 job_creator.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/Gene
 ## example to run quark combination
 
 python /eos/user/a/aman/LHCDM_tchan_Combination//NLOCombination_quark.py --MY 400 --MX 300 --coup 1.0 --process XY --order NLO --model S3M --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/ --output /eos/user/a/aman/LHCDM_tchan_Combination/output2/output_ud_S3M/ --wmratio y
+
+python /eos/user/a/aman/LHCDM_tchan_Combination//NLOCombination_quark.py --MY 500 --MX 300 --coup 1.0 --process XY --order NLO --model S3M --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/ --output /eos/user/a/aman/LHCDM_tchan_Combination/output2/output_ud_S3M/ --wmratio y
+
+
+python3 job_creator_quark_combination.py --input /eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Results/ --output /eos/user/a/aman/LHCDM_tchan_Combination/output2/output_ud_S3M/ --wmratio y --model S3M
