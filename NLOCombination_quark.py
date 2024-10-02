@@ -65,7 +65,7 @@ rescale_xsec_YYtPP = [0]*len(quarks)
 rescale_xsec_YYtPM = [0]*len(quarks)
 rescale_xsec_YYtMM = [0]*len(quarks)
 
-folderName = [0,0]
+folderName = [0]*len(quarks)
 
 for iquark, quark in enumerate(quarks):
 
@@ -208,6 +208,14 @@ ma5.BackendManager.set_madanalysis_backend(args.ma5dir)
 
 # Samples to be combined. Each set of samples are generated and stored in separate directories
 
+def replace_hyphens(data):
+    if isinstance(data, dict):
+        return {k.replace("-", "_"): replace_hyphens(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [replace_hyphens(item) for item in data]
+    else:
+        return data
+
 for iquark,quark in enumerate(quarks):
     for proc in processes_full:
 
@@ -230,9 +238,12 @@ for iquark,quark in enumerate(quarks):
             sys.exit()
 
 # Output folder
+qstring=""
+for i in range(len(quarks)):
+    qstring += quarks[i]
 
 #if proc_study == "Full":
-combined_path = args.output +  model + "_" + proc_study + "_" + order_file + "_SM"+ quarks[0]+quarks[1]+ "_MY" + str(mY) + "_MX" + str(mX) + "_coup" + str(coupling) + "_recast" 
+combined_path = args.output +  model + "_" + proc_study + "_" + order_file + "_SM"+ str(qstring) + "_MY" + str(mY) + "_MX" + str(mX) + "_coup" + str(coupling) + "_recast"
 #else:
 #    combined_path = args.output + name_recast_file 
 
@@ -320,7 +331,12 @@ for ana in analysis_names:
 
     ET = run_recast.check_xml_scipy_methods()
 
+
     lumi, regions, regiondata = run_recast.parse_info_file(ET,analysis,extrapolated_lumi)
+
+    # Replace hyphens with underscores in regions and regiondata
+    regions = [region.replace("-", "_") for region in regions]
+    regiondata = replace_hyphens(regiondata)
 
     print(regions, regiondata)
     for i, quark in enumerate(quarks):
