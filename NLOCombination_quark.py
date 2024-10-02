@@ -67,17 +67,17 @@ rescale_xsec_YYtMM = [0]*len(quarks)
 
 folderName = [0,0]
 
-for i, quark in enumerate(quarks):
+for iquark, quark in enumerate(quarks):
 
     inputfolder = os.path.join(args.input, quark) 
-    folderName[i] = os.path.join(inputfolder, "Results_{}_recast".format(model))
+    folderName[iquark] = os.path.join(inputfolder, "Results_{}_recast".format(model))
     fileName = "Sigmas/{}_sigmas.dat".format(model)
 
     print("Summary of inputs")
     print("mY mX order coupling quark model")
     print(mY, mX, order, coupling, quark, model)
 
-    inputfile = os.path.join(folderName[i],fileName)
+    inputfile = os.path.join(folderName[iquark],fileName)
 
     # Define the file path
     file_path = inputfile
@@ -150,16 +150,16 @@ for i, quark in enumerate(quarks):
         sys.exit()
 
     if order == "LO":
-        rescale_xsec_YYi[i] = select_row_YYi['CShat(pb)'].values[0]*coupling**coupling_power['YYi']
+        rescale_xsec_YYi[iquark] = select_row_YYi['CShat(pb)'].values[0]*coupling**coupling_power['YYi']
     elif order == "NLO":
-        rescale_xsec_YYi[i] = select_row_YYi['CShat(pb)'].values[0]*coupling**coupling_power['YYi']*Kfactor_YYi
+        rescale_xsec_YYi[iquark] = select_row_YYi['CShat(pb)'].values[0]*coupling**coupling_power['YYi']*Kfactor_YYi
 
-    rescale_xsec_XX[i]=select_row_order[select_row_order["process"] == 'XX']['CShat(pb)'].values[0]*coupling**coupling_power['XX']
-    rescale_xsec_XY[i]=select_row_order[select_row_order["process"] == 'XY']['CShat(pb)'].values[0]*coupling**coupling_power['XY']
-    rescale_xsec_YYQCD[i]=select_row_order[select_row_order["process"] == 'YYQCD']['CShat(pb)'].values[0]*coupling**coupling_power['YYQCD']
-    rescale_xsec_YYtPP[i]=select_row_order[select_row_order["process"] == 'YYtPP']['CShat(pb)'].values[0]*coupling**coupling_power['YYtPP']
-    rescale_xsec_YYtPM[i]=select_row_order[select_row_order["process"] == 'YYtPM']['CShat(pb)'].values[0]*coupling**coupling_power['YYtPM']
-    rescale_xsec_YYtMM[i]=select_row_order[select_row_order["process"] == 'YYtMM']['CShat(pb)'].values[0]*coupling**coupling_power['YYtMM']
+    rescale_xsec_XX[iquark]=select_row_order[select_row_order["process"] == 'XX']['CShat(pb)'].values[0]*coupling**coupling_power['XX']
+    rescale_xsec_XY[iquark]=select_row_order[select_row_order["process"] == 'XY']['CShat(pb)'].values[0]*coupling**coupling_power['XY']
+    rescale_xsec_YYQCD[iquark]=select_row_order[select_row_order["process"] == 'YYQCD']['CShat(pb)'].values[0]*coupling**coupling_power['YYQCD']
+    rescale_xsec_YYtPP[iquark]=select_row_order[select_row_order["process"] == 'YYtPP']['CShat(pb)'].values[0]*coupling**coupling_power['YYtPP']
+    rescale_xsec_YYtPM[iquark]=select_row_order[select_row_order["process"] == 'YYtPM']['CShat(pb)'].values[0]*coupling**coupling_power['YYtPM']
+    rescale_xsec_YYtMM[iquark]=select_row_order[select_row_order["process"] == 'YYtMM']['CShat(pb)'].values[0]*coupling**coupling_power['YYtMM']
 #rescale_xsec_YYi=select_row_order_YYi[select_row_order_YYi["process"] == 'YYi']['CShat(pb)'].values[0]*coupling**coupling_power['YYi']
 
 # madanalysis expert mode 
@@ -208,7 +208,7 @@ ma5.BackendManager.set_madanalysis_backend(args.ma5dir)
 
 # Samples to be combined. Each set of samples are generated and stored in separate directories
 
-for i,quark in enumerate(quarks):
+for iquark,quark in enumerate(quarks):
     for proc in processes_full:
 
         if proc == "YYi":
@@ -218,7 +218,7 @@ for i,quark in enumerate(quarks):
 
         name_recast_file = model + "_" + proc + "_" + order_file + "_SM"+ quark + "_MY" + str(mY) + "_MX" + str(mX)  + "_recast"
 
-        file = os.path.join(folderName[i], "MA5_Recast",name_recast_file)
+        file = os.path.join(folderName[iquark], "MA5_Recast",name_recast_file)
         extract_tar(file, os.path.join("/tmp/MA5_Recast"))
         file = file+ ".tar.gz"
         print(file)
@@ -260,42 +260,42 @@ for ana in analysis_names:
     YYtPM_collection = [0]*len(quarks)
     YYtMM_collection = [0]*len(quarks)
 
-    for i, quark in enumerate(quarks):
+    for iquark, quark in enumerate(quarks):
 
-        XX_path[i]  = os.path.join("/tmp/MA5_Recast/{}_XX_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-        XY_path[i]  = os.path.join("/tmp/MA5_Recast/{}_XY_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-        YYi_path[i]  = os.path.join("/tmp/MA5_Recast/{}_YYi_LO_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, quark, mY, mX, ana))
-        YYQCD_path[i]  = os.path.join("/tmp/MA5_Recast/{}_YYQCD_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-        YYtPP_path[i]  = os.path.join("/tmp/MA5_Recast/{}_YYtPP_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-        YYtPM_path[i]  = os.path.join("/tmp/MA5_Recast/{}_YYtPM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
-        YYtMM_path[i]  = os.path.join("/tmp/MA5_Recast/{}_YYtMM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+        XX_path[iquark]  = os.path.join("/tmp/MA5_Recast/{}_XX_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+        XY_path[iquark]  = os.path.join("/tmp/MA5_Recast/{}_XY_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+        YYi_path[iquark]  = os.path.join("/tmp/MA5_Recast/{}_YYi_LO_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, quark, mY, mX, ana))
+        YYQCD_path[iquark]  = os.path.join("/tmp/MA5_Recast/{}_YYQCD_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+        YYtPP_path[iquark]  = os.path.join("/tmp/MA5_Recast/{}_YYtPP_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+        YYtPM_path[iquark]  = os.path.join("/tmp/MA5_Recast/{}_YYtPM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
+        YYtMM_path[iquark]  = os.path.join("/tmp/MA5_Recast/{}_YYtMM_{}_SM{}_MY{}_MX{}_recast/Output/SAF/dmtsimp/{}/Cutflows".format(model, order, quark, mY, mX, ana))
 
         if proc_study == "XX":
-            xsec_proc  += rescale_xsec_XX[i]
+            xsec_proc  += rescale_xsec_XX[iquark]
 
         if proc_study == "XY":
-            xsec_proc  += rescale_xsec_XY[i]
+            xsec_proc  += rescale_xsec_XY[iquark]
 
         if proc_study == "YYQCD":
-            xsec_proc  += rescale_xsec_YYQCD[i]
+            xsec_proc  += rescale_xsec_YYQCD[iquark]
 
         if proc_study == "YYt":
-            xsec_proc  += rescale_xsec_YYtMM[i] + rescale_xsec_YYtPM[i] + rescale_xsec_YYtPP[i]
+            xsec_proc  += rescale_xsec_YYtMM[iquark] + rescale_xsec_YYtPM[iquark] + rescale_xsec_YYtPP[iquark]
 
         if proc_study == "YYSum":
-            xsec_proc  += rescale_xsec_YYi[i] + rescale_xsec_YYQCD[i] + rescale_xsec_YYtPP[i] + rescale_xsec_YYtPM[i] + rescale_xsec_YYtMM[i]
+            xsec_proc  += rescale_xsec_YYi[iquark] + rescale_xsec_YYQCD[iquark] + rescale_xsec_YYtPP[iquark] + rescale_xsec_YYtPM[iquark] + rescale_xsec_YYtMM[iquark]
 
         if proc_study == "Full":
-            xsec_proc  += rescale_xsec_XX[i] + rescale_xsec_XY[i] + rescale_xsec_YYi[i] + rescale_xsec_YYQCD[i] + rescale_xsec_YYtPP[i] + rescale_xsec_YYtPM[i] + rescale_xsec_YYtMM[i]
+            xsec_proc  += rescale_xsec_XX[iquark] + rescale_xsec_XY[iquark] + rescale_xsec_YYi[iquark] + rescale_xsec_YYQCD[iquark] + rescale_xsec_YYtPP[iquark] + rescale_xsec_YYtPM[iquark] + rescale_xsec_YYtMM[iquark]
     
   
-        XX_collection[i] = ma5.cutflow.Collection(XX_path[i],  xsection = rescale_xsec_XX[i],  lumi = luminosity,)
-        XY_collection[i]  = ma5.cutflow.Collection(XY_path[i],  xsection = rescale_xsec_XY[i],  lumi = luminosity,)
-        YYi_collection[i]  = ma5.cutflow.Collection(YYi_path[i],  xsection = rescale_xsec_YYi[i],  lumi = luminosity,)
-        YYQCD_collection[i] = ma5.cutflow.Collection(YYQCD_path[i], xsection = rescale_xsec_YYQCD[i],  lumi = luminosity,)
-        YYtPP_collection[i] = ma5.cutflow.Collection(YYtPP_path[i], xsection = rescale_xsec_YYtPP[i],  lumi = luminosity,)
-        YYtPM_collection[i] = ma5.cutflow.Collection(YYtPM_path[i], xsection = rescale_xsec_YYtPM[i],  lumi = luminosity,)
-        YYtMM_collection[i] = ma5.cutflow.Collection(YYtMM_path[i], xsection = rescale_xsec_YYtMM[i],  lumi = luminosity,)
+        XX_collection[iquark] = ma5.cutflow.Collection(XX_path[iquark],  xsection = rescale_xsec_XX[iquark],  lumi = luminosity,)
+        XY_collection[iquark]  = ma5.cutflow.Collection(XY_path[iquark],  xsection = rescale_xsec_XY[iquark],  lumi = luminosity,)
+        YYi_collection[iquark]  = ma5.cutflow.Collection(YYi_path[iquark],  xsection = rescale_xsec_YYi[iquark],  lumi = luminosity,)
+        YYQCD_collection[iquark] = ma5.cutflow.Collection(YYQCD_path[iquark], xsection = rescale_xsec_YYQCD[iquark],  lumi = luminosity,)
+        YYtPP_collection[iquark] = ma5.cutflow.Collection(YYtPP_path[iquark], xsection = rescale_xsec_YYtPP[iquark],  lumi = luminosity,)
+        YYtPM_collection[iquark] = ma5.cutflow.Collection(YYtPM_path[iquark], xsection = rescale_xsec_YYtPM[iquark],  lumi = luminosity,)
+        YYtMM_collection[iquark] = ma5.cutflow.Collection(YYtMM_path[iquark], xsection = rescale_xsec_YYtMM[iquark],  lumi = luminosity,)
 
     xsec = xsec_proc
 
@@ -333,34 +333,34 @@ for ana in analysis_names:
                 
 
             if proc_study == "XX":
-                regiondata[reg]["Nf"] += XX_collection[i][reg].final_cut.eff * rescale_xsec_XX[i]
+                regiondata[reg]["Nf"] += XX_collection[iquark][reg].final_cut.eff * rescale_xsec_XX[iquark]
 
             if proc_study == "XY":
-                regiondata[reg]["Nf"] += XY_collection[i][reg].final_cut.eff * rescale_xsec_XY[i]
+                regiondata[reg]["Nf"] += XY_collection[iquark][reg].final_cut.eff * rescale_xsec_XY[iquark]
 
             if proc_study == "YYQCD":
-                regiondata[reg]["Nf"] += YYQCD_collection[i][reg].final_cut.eff * rescale_xsec_YYQCD[i]
+                regiondata[reg]["Nf"] += YYQCD_collection[iquark][reg].final_cut.eff * rescale_xsec_YYQCD[iquark]
 
             if proc_study == "YYt":
-                regiondata[reg]["Nf"] += YYtPP_collection[i][reg].final_cut.eff * rescale_xsec_YYtPP[i] + \
-                                        YYtPM_collection[i][reg].final_cut.eff * rescale_xsec_YYtPM[i] + \
-                                        YYtMM_collection[i][reg].final_cut.eff * rescale_xsec_YYtMM[i] 
+                regiondata[reg]["Nf"] += YYtPP_collection[iquark][reg].final_cut.eff * rescale_xsec_YYtPP[iquark] + \
+                                        YYtPM_collection[iquark][reg].final_cut.eff * rescale_xsec_YYtPM[iquark] + \
+                                        YYtMM_collection[iquark][reg].final_cut.eff * rescale_xsec_YYtMM[iquark] 
 
             if proc_study == "YYSum":
-                regiondata[reg]["Nf"] += YYi_collection[i][reg].final_cut.eff * rescale_xsec_YYi[i] + \
-                                        YYQCD_collection[i][reg].final_cut.eff * rescale_xsec_YYQCD[i] + \
-                                        YYtPP_collection[i][reg].final_cut.eff * rescale_xsec_YYtPP[i] + \
-                                        YYtPM_collection[i][reg].final_cut.eff * rescale_xsec_YYtPM[i] + \
-                                        YYtMM_collection[i][reg].final_cut.eff * rescale_xsec_YYtMM[i] 
+                regiondata[reg]["Nf"] += YYi_collection[iquark][reg].final_cut.eff * rescale_xsec_YYi[iquark] + \
+                                        YYQCD_collection[iquark][reg].final_cut.eff * rescale_xsec_YYQCD[iquark] + \
+                                        YYtPP_collection[iquark][reg].final_cut.eff * rescale_xsec_YYtPP[iquark] + \
+                                        YYtPM_collection[iquark][reg].final_cut.eff * rescale_xsec_YYtPM[iquark] + \
+                                        YYtMM_collection[iquark][reg].final_cut.eff * rescale_xsec_YYtMM[iquark] 
 
             if proc_study == "Full":
-                regiondata[reg]["Nf"] += XX_collection[i][reg].final_cut.eff * rescale_xsec_XX[i] + \
-                                        XY_collection[i][reg].final_cut.eff * rescale_xsec_XY[i] + \
-                                        YYQCD_collection[i][reg].final_cut.eff * rescale_xsec_YYQCD[i] + \
-                                        YYi_collection[i][reg].final_cut.eff * rescale_xsec_YYi[i] + \
-                                        YYtPP_collection[i][reg].final_cut.eff * rescale_xsec_YYtPP[i] + \
-                                        YYtPM_collection[i][reg].final_cut.eff * rescale_xsec_YYtPM[i] + \
-                                        YYtMM_collection[i][reg].final_cut.eff * rescale_xsec_YYtMM[i] 
+                regiondata[reg]["Nf"] += XX_collection[iquark][reg].final_cut.eff * rescale_xsec_XX[iquark] + \
+                                        XY_collection[iquark][reg].final_cut.eff * rescale_xsec_XY[iquark] + \
+                                        YYQCD_collection[iquark][reg].final_cut.eff * rescale_xsec_YYQCD[iquark] + \
+                                        YYi_collection[iquark][reg].final_cut.eff * rescale_xsec_YYi[iquark] + \
+                                        YYtPP_collection[iquark][reg].final_cut.eff * rescale_xsec_YYtPP[iquark] + \
+                                        YYtPM_collection[iquark][reg].final_cut.eff * rescale_xsec_YYtPM[iquark] + \
+                                        YYtMM_collection[iquark][reg].final_cut.eff * rescale_xsec_YYtMM[iquark] 
             regiondata[reg]["N0"] += xsec
         #regiondata[reg]["nb"]=extrapolated_lumi/luminosity*regiondata[reg]["nb"]
         # Calculate exclusion limits
