@@ -555,3 +555,4 @@ if os.path.exists(missingpoints_path):
 if not os.path.exists(missingpoints_path):
     with open(os.path.join(combined_path, "done"), "a+") as d:
         d.write(f"{name}\n")  # Keeps the line as it was before
+
