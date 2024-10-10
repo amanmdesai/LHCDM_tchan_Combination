@@ -1,9 +1,15 @@
 #!/bin/bash
 
+# uncomment for debug purposes
+# set -x 
+
+currentfolder="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+currentfile="${0##*/}"
+
 ###################################
 #### INSTALL AND CONFIGURE MA5 ####
 ###################################
-InstallMadAnalysisfolder="/eos/user/a/aman/LHCDM_tchan_Combination"
+InstallMadAnalysisfolder="${currentfolder}/../"
 
 
 if [[ ! -e ${InstallMadAnalysisfolder}/MA5installed ]]; then
@@ -29,7 +35,7 @@ python3 -m pip install scipy click tqdm six jsonschema jsonpatch PyYAML pyhf pan
   sed -i "s|if not importlib.util.find_spec(\"six\"):|if not util.find_spec(\"six\"):|g" ${InstallMadAnalysisfolder}/madanalysis5/bin/ma5
 
   cd ${InstallMadAnalysisfolder}/madanalysis5
-  python3 bin/ma5 -s < $InstallMadAnalysisfolder/MA5_installpackages
+  python3 bin/ma5 -s < $InstallMadAnalysisfolder/installation_scripts/MA5_installpackages
 
   cd $InstallMadAnalysisfolder
 
@@ -42,4 +48,4 @@ python3 -m pip install scipy click tqdm six jsonschema jsonpatch PyYAML pyhf pan
   fi
 fi
 
-
+deactivate
