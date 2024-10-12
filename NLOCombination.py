@@ -62,6 +62,7 @@ for quark in quarks:
 coupling_power = {'XX' : 4, 'XY':2, 'YYi':2, 'YYQCD': 0, 'YYtPP': 4, 'YYtPM': 4, 'YYtMM': 4, 'YYt': 4, 'YYbt': 4, 'YbYbt': 4}
 processes_full = ['XX','XY','YYi','YYQCD','YYtPP','YYtPM','YYtMM','YYt','YYbt','YbYbt']
 processes_YYsum = ['YYi','YYQCD','YYtPP','YYtPM','YYtMM','YYt','YYbt','YbYbt']
+processes_YYtch = ['YYtPP','YYtPM','YYtMM','YYt','YYbt','YbYbt']
 orders = ['NLO','LO']
 
 # need to add quark information here
@@ -140,6 +141,8 @@ if proc_study == "YYsum":
     proclist = processes_YYsum
 if proc_study == "Full":
     proclist = processes_full
+if proc_study == "YYtch":
+    proclist = processes_YYtch
 
 
 
@@ -435,11 +438,11 @@ for iquark, quark in enumerate(quarks):
                 rescale_xsec_XY[iquark] = rescale_xsec
             elif process == 'YYQCD':
                 rescale_xsec_YYQCD[iquark] = rescale_xsec
-            elif process == 'YYt':
+            elif process == 'YYt' or process == 'YYtPP':
                 rescale_xsec_YYtPP[iquark] = rescale_xsec
-            elif process == 'YYbt':
+            elif process == 'YYbt' or process == 'YYtPM':
                 rescale_xsec_YYtPM[iquark] = rescale_xsec
-            elif process == 'YbYbt':
+            elif process == 'YbYbt' or process == 'YYtMM':
                 rescale_xsec_YYtMM[iquark] = rescale_xsec
         
         
@@ -511,7 +514,7 @@ points_processed = False
 for iquark, quark in enumerate(quarks):
     for proc in proclist:
         
-        if quark == "t" and (proc in ['XY', 'YYtPP', 'YYtPM', 'YYtMM', 'YYi'] or (proc == "XX" and order == "LO")):
+        if quark == "t" and (proc in ['XY', 'YYtPP', 'YYtPM', 'YYtMM', 'YYi', 'YYt', 'YYbt', 'YbYbt'] or (proc == "XX" and order == "LO")):
             continue
 
 
@@ -694,10 +697,10 @@ for ana in analysis_names:
         if proc_study == "YYQCD":
             xsec_proc  += rescale_xsec_YYQCD[iquark]
 
-        if proc_study == "YYt":
+        if proc_study == "YYtch":
             xsec_proc  += rescale_xsec_YYtMM[iquark] + rescale_xsec_YYtPM[iquark] + rescale_xsec_YYtPP[iquark]
 
-        if proc_study == "YYSum":
+        if proc_study == "YYsum":
             xsec_proc  += rescale_xsec_YYi[iquark] + rescale_xsec_YYQCD[iquark] + rescale_xsec_YYtPP[iquark] + rescale_xsec_YYtPM[iquark] + rescale_xsec_YYtMM[iquark]
 
         if proc_study == "Full":
@@ -759,12 +762,12 @@ for ana in analysis_names:
             if proc_study == "YYQCD":
                 regiondata[reg]["Nf"] += YYQCD_collection[iquark][reg].final_cut.eff * rescale_xsec_YYQCD[iquark]
 
-            if proc_study == "YYt":
+            if proc_study == "YYtch":
                 regiondata[reg]["Nf"] += YYtPP_collection[iquark][reg].final_cut.eff * rescale_xsec_YYtPP[iquark] + \
                                         YYtPM_collection[iquark][reg].final_cut.eff * rescale_xsec_YYtPM[iquark] + \
                                         YYtMM_collection[iquark][reg].final_cut.eff * rescale_xsec_YYtMM[iquark] 
 
-            if proc_study == "YYSum":
+            if proc_study == "YYsum":
                 regiondata[reg]["Nf"] += YYi_collection[iquark][reg].final_cut.eff * rescale_xsec_YYi[iquark] + \
                                         YYQCD_collection[iquark][reg].final_cut.eff * rescale_xsec_YYQCD[iquark] + \
                                         YYtPP_collection[iquark][reg].final_cut.eff * rescale_xsec_YYtPP[iquark] + \

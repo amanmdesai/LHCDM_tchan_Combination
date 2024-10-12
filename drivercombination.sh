@@ -16,11 +16,11 @@ for i in `seq 0 100 2000`; do XMASSArray=("${XMASSArray[@]}" "$i"); YMASSArray=(
 
 declare -a COUPLINGArray=(-0.05)
 # declare -a QUARKArray=("u" "d" "c" "s" "t" "b" "u d c s t b")
-declare -a QUARKArray=("d")
+declare -a QUARKArray=("d" "u")
 
 # declare -a MODELArray=("S3M" "F3S" "F3V" "S3D" "F3C" "F3W")
 declare -a MODELArray=("S3M" "F3S" "F3V")
-declare -a PROCESSArray=("XX" "XY" "YYQCD" "YYt" "YYsum" "Full")
+declare -a PROCESSArray=("XX" "XY" "YYQCD" "YYtch" "YYsum" "Full")
 declare -a ORDERArray=("NLO" "LO")
 
 ##############################
@@ -65,10 +65,10 @@ echo "x mass array: ${XMASSArray[@]}"
 echo "y mass array: ${YMASSArray[@]}"
 
 jobcounter=1
+for quark in ${QUARKArray[@]}; do
 for model in ${MODELArray[@]}; do
 for process in ${PROCESSArray[@]}; do
 for order in ${ORDERArray[@]}; do
-for quark in ${QUARKArray[@]}; do
 for my in ${YMASSArray[@]}; do
 for mx1 in ${XMASSArray[@]}; do
 
@@ -98,7 +98,7 @@ for mx1 in ${XMASSArray[@]}; do
   
   # some processes are not allowed for specific quark generations
   if [[ $quark == "t" ]]; then
-    if [[ $process == "XX" && ${order} == "LO" ]] || [[ $process == "XY" || $process == "YYt" || $process == "YYsum" ]]; then continue; fi 
+    if [[ $process == "XX" && ${order} == "LO" ]] || [[ $process == "XY" || $process == "YYtch" || $process == "YYsum" ]]; then continue; fi 
     if (( $(echo "${my}-${mx} < ${mt}" | bc -l) )); then continue; fi
   fi
 
@@ -116,9 +116,9 @@ for mx1 in ${XMASSArray[@]}; do
     #### NAME OF RUN ####
     #####################
     qstring="${quark// /}"
-    namerun="${model}_${process}_${order}_MY${my}_MX${mx}_SMq${qstring}_coup${coupling}${outputlabel}"
+    namerun="${model}_${process}_${order}_MY${my}_MX${mx}_SM${qstring}_coup${coupling}${outputlabel}"
     if (( $(echo "$coupling < 0" | bc -l) )); then
-      namerun="${model}_${process}_${order}_MY${my}_MX${mx}_SMq${qstring}_WMY${wmy}${outputlabel}"
+      namerun="${model}_${process}_${order}_MY${my}_MX${mx}_SM${qstring}_WMY${wmy}${outputlabel}"
     fi
   
     if (( $(echo "$coupling < 0" | bc -l) )); then
@@ -208,15 +208,14 @@ for mx1 in ${XMASSArray[@]}; do
     #### NAME OF CONDOR FILES ####
     ##############################
   
-    condorsub="${condorsubfolder}/${namerun}_condorsub"
-    condorscript="${condorsubfolder}/DMtsimp_${namerun}.sh"
+    condorsubfolder1="${condorsubfolder}/${model}_${order}_SM${qstring}" 
+    condorsub="${condorsubfolder1}/${namerun}_condorsub"
+    condorscript="${condorsubfolder1}/DMtsimp_${namerun}.sh"
     
     # ------------------------- #
     # write condor instructions #
     # ------------------------- #
-    mkdir -p $condorsubfolder
-    #condorsub="${condorsubfolder}/${namerun}_condorsub"
-    #condorscript="${condorsubfolder}/DMtsimp_${namerun}.sh"
+    mkdir -p $condorsubfolder1
 
     # convert walltime from dd:hh:mm:ss to nsecs (if not in this format, it won't change the variable)
     IFS=':' read -r -a components <<< "$walltime"
@@ -231,17 +230,17 @@ for mx1 in ${XMASSArray[@]}; do
     fi
 
     # write condorsub
-    echo "executable              = ${condorscript}"                       > ${condorsub}
-    echo "notification            = Error"                                >> ${condorsub}
-    echo "should_transfer_files   = yes"                                  >> ${condorsub}
-    echo "output                  = ${condorsubfolder}/${namerun}_output" >> ${condorsub}
-    echo "error                   = ${condorsubfolder}/${namerun}_output" >> ${condorsub}
-    echo "log                     = ${condorsubfolder}/${namerun}_output" >> ${condorsub}
-    echo "RequestCpus             = ${lxpluscores}"                       >> ${condorsub}
+    echo "executable              = ${condorscript}"                        > ${condorsub}
+    echo "notification            = Error"                                 >> ${condorsub}
+    echo "should_transfer_files   = yes"                                   >> ${condorsub}
+    echo "output                  = ${condorsubfolder1}/${namerun}_output" >> ${condorsub}
+    echo "error                   = ${condorsubfolder1}/${namerun}_output" >> ${condorsub}
+    echo "log                     = ${condorsubfolder1}/${namerun}_output" >> ${condorsub}
+    echo "RequestCpus             = ${lxpluscores}"                        >> ${condorsub}
     
     # Ensure that output is transferred even if evicted
-    echo "WHEN_TO_TRANSFER_OUTPUT = ON_EXIT_OR_EVICT"                     >> ${condorsub}
-    echo "+SpoolOnEvict           = False"                                >> ${condorsub}
+    echo "WHEN_TO_TRANSFER_OUTPUT = ON_EXIT_OR_EVICT"                      >> ${condorsub}
+    echo "+SpoolOnEvict           = False"                                 >> ${condorsub}
 
     if [[ "${walltime1}" =~ ^[0-9]+$ ]]; then
       echo "+MaxRuntime             = ${walltime1}"                       >> ${condorsub}
@@ -300,7 +299,7 @@ for mx1 in ${XMASSArray[@]}; do
     if [[ $flagrepeat == "1" ]]; then echo ""; fi
 
   
-    cd ${condorsubfolder}/
+    cd ${condorsubfolder1}/
     JOBID=$(condor_submit -terse ${condorsub})
     JOBID1=$(echo "$JOBID" | awk '{print $1}')
     runningjobs=$(echo "${runningjobs}-8" | bc )
