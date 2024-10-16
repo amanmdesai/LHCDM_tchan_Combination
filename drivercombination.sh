@@ -12,11 +12,11 @@ currentfile=`basename "$0"`
 
 declare -a XMASSArray=(-5 -1 1 10 50 100); # DM masses
 declare -a YMASSArray=(10 50 100); # mediator masses
-for i in `seq 0 100 2000`; do XMASSArray=("${XMASSArray[@]}" "$i"); YMASSArray=("${YMASSArray[@]}" "$i"); done
+for i in `seq 0 100 4000`; do XMASSArray=("${XMASSArray[@]}" "$i"); YMASSArray=("${YMASSArray[@]}" "$i"); done
 
 declare -a COUPLINGArray=(-0.05)
 # declare -a QUARKArray=("u" "d" "c" "s" "t" "b" "u d c s t b")
-declare -a QUARKArray=("d" "u")
+declare -a QUARKArray=("u" "d")
 
 # declare -a MODELArray=("S3M" "F3S" "F3V" "S3D" "F3C" "F3W")
 declare -a MODELArray=("S3M" "F3S" "F3V")
@@ -31,7 +31,7 @@ lxplususer=$USER
 condorsubfolder="${HOME}/condorsubs/DMtsimp_condor_reinterpretations" # folder where simulation logs are stored. It will be generated automatically if non-existent
 lxpluscores=1
 walltime="00:03:00:00" # dd:hh:mm:ss
-# walltime="\"testmatch\"" # this is an alternative way: if a flavour is given, it will be automatically assigned to JobFlavour instead of +MaxRuntime
+#walltime="\"testmatch\"" # this is an alternative way: if a flavour is given, it will be automatically assigned to JobFlavour instead of +MaxRuntime
 walltime="\"microcentury\"" # this is an alternative way: if a flavour is given, it will be automatically assigned to JobFlavour instead of +MaxRuntime
 
 maxrunningjobs=3000; # how many jobs can be queued at the same time: when this value is hit, the script will wait ${waittosubmit} seconds for jobs to complete before submitting others
@@ -47,7 +47,7 @@ ResultsFolder="/eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Re
 
 
 #declare -a MODELArray=("S3M")
-#declare -a PROCESSArray=("XX")
+#declare -a PROCESSArray=("Full")
 #declare -a ORDERArray=("NLO")
 
 
@@ -102,6 +102,7 @@ for mx1 in ${XMASSArray[@]}; do
     if (( $(echo "${my}-${mx} < ${mt}" | bc -l) )); then continue; fi
   fi
 
+  COUPLING1Array=${COUPLINGArray[@]}
   if [[ $quark == "u" || $quark == "d" ]]; then
     if [[ $model == "S3M" || $model == "S3D" ]]; then COUPLING1Array=("${COUPLINGArray[@]}" "3.5"); fi
     if [[ $model == "F3S" || $model == "F3C" ]]; then COUPLING1Array=("${COUPLINGArray[@]}" "4.8"); fi
@@ -168,18 +169,51 @@ for mx1 in ${XMASSArray[@]}; do
     }
 
     
+    MA5exists=1
+    missingpointsfile="$ResultsFolder/Results_${model}_SM${qstring}/${process}_${order}_MY${my}_MX${mx}_coup${coupling}/missingpoints.dat"
+    if (( $(echo "$coupling < 0" | bc -l) )); then
+      missingpointsfile="$ResultsFolder/Results_${model}_SM${qstring}/${process}_${order}_MY${my}_MX${mx}_WMY${wmy}/missingpoints.dat"
+    fi
+
     if [[ ${process} == "XX" || ${process} == "XY" || ${process} == "YYQCD" ]]; then
-      MA5exists=1
       MA5tarballpath="${ResultsFolder}/../${quark}/Results_${model}_recast/MA5_Recast/${model}_${process}_${order}_SM${quark}_MY${my}_MX${mx}_recast.tar.gz"
-        if [[ ! -f ${MA5tarballpath} ]]; then MA5exists=0; fi
+      if [[ ! -f ${MA5tarballpath} ]]; then MA5exists=0; fi
       if [[ $quark == "c" ]]; then
         MA5tarballpath="${ResultsFolder}/../${model}_${process}/${order}/"
 	if ! find_tarball_for_masses "$MA5tarballpath" "$my" "$mx" "$model"; then MA5exists=0; fi
       fi
-      if [[ $MA5exists == "0" ]]; then 
-        echo "No MA5tarball found!"
-        continue
+    elif [[ $process == "YYsum" ]]; then
+      if [[ -f $missingpointsfile ]]; then
+        for proc1 in "YYtPP" "YYtPM" "YYtMM" "YYt" "YYbt" "YbYbt"; do
+          # Check if proc1 is present in the second-to-last column
+          if grep -q "\s${proc1}\s" "$missingpointsfile"; then
+            MA5tarballpath="${ResultsFolder}/../${quark}/Results_${model}_recast/MA5_Recast/${model}_${proc1}_${order}_SM${quark}_MY${my}_MX${mx}_recast.tar.gz"
+            if [[ $quark == "c" ]]; then
+              MA5tarballpath="${ResultsFolder}/../${model}_${proc1}/${order}/"
+	    fi
+            # Check if tarball does not exist
+            if [[ ! -f "$MA5tarballpath" ]]; then printf "$proc1 "; MA5exists=0; fi
+          fi
+        done
       fi
+    elif [[ $process == "Full" ]]; then
+      if [[ -f $missingpointsfile  ]]; then
+        for proc1 in "XX" "XY" "YYQCD" "YYi" "YYtPP" "YYtPM" "YYtMM" "YYt" "YYbt" "YbYbt"; do
+           # Check if proc1 is present in the second-to-last column
+          if grep -q "\s${proc1}\s" "$missingpointsfile"; then
+            MA5tarballpath="${ResultsFolder}/../${quark}/Results_${model}_recast/MA5_Recast/${model}_${proc1}_${order}_SM${quark}_MY${my}_MX${mx}_recast.tar.gz"
+            if [[ $quark == "c" ]]; then
+              MA5tarballpath="${ResultsFolder}/../${model}_${proc1}/${order}/"
+            fi
+            # Check if tarball does not exist
+	    if [[ ! -f "$MA5tarballpath" ]]; then printf "$proc1 "; MA5exists=0; fi
+          fi
+        done
+      fi
+    fi
+    if [[ $MA5exists == "0" ]]; then
+      echo "MA5 tarball not found!"
+      continue
     fi
     
     ########################################
@@ -192,16 +226,27 @@ for mx1 in ${XMASSArray[@]}; do
 
     # Check if the tarball exists
     if [[ -f "$tarballresult" ]]; then
-      # Check if the 'done' file exists inside the tarball
-      if tar -tzf "$tarballresult" | grep -q 'done'; then
-        echo "already done"
-	continue
+      # Check if tarball is corrupted (by checking return value of tar)
+      if tar -tzf "$tarballresult" > /dev/null 2>&1; then
+        # Tarball is valid, now check for 'done' file
+        if tar -tzf "$tarballresult" | grep -q 'done'; then
+          echo "already done"
+          continue
+        else
+          # 'done' file not found, proceed to remove the tarball and reprocess
+          printf "'done' file not found, removing and reprocessing... "
+          rm "$tarballresult"
+        fi
       else
-        # 'done' file not found, remove the tarball and proceed with reprocessing
-        printf "'done' file not found, removing and reprocessing... "
-        rm "$tarballresult"
+        # Tarball is corrupted
+        printf "Corrupted tarball detected, removing and reprocessing... "
+        rm -f "$tarballresult"                # Remove the corrupted tarball
+        folder="${tarballresult%.tar.gz}"      # Derive the folder name by removing the suffix
+        rm -rf "$folder"                       # Remove the corresponding folder
       fi
     fi
+
+
 
 
     ##############################
