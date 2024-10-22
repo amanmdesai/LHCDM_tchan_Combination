@@ -16,11 +16,16 @@ for i in `seq 0 100 4000`; do XMASSArray=("${XMASSArray[@]}" "$i"); YMASSArray=(
 
 declare -a COUPLINGArray=(-0.05)
 # declare -a QUARKArray=("u" "d" "c" "s" "t" "b" "u d c s t b")
-declare -a QUARKArray=("u" "d")
+declare -a QUARKArray=("u" "d" "s" "c" "b")
+
+
 
 # declare -a MODELArray=("S3M" "F3S" "F3V" "S3D" "F3C" "F3W")
 declare -a MODELArray=("S3M" "F3S" "F3V")
+
 declare -a PROCESSArray=("XX" "XY" "YYQCD" "YYtch" "YYsum" "Full")
+
+
 declare -a ORDERArray=("NLO" "LO")
 
 ##############################
@@ -49,7 +54,8 @@ ResultsFolder="/eos/project/d/dmwg-shared-space/DM_tchannel/GeneralSimulation/Re
 #declare -a MODELArray=("S3M")
 #declare -a PROCESSArray=("Full")
 #declare -a ORDERArray=("NLO")
-
+# declare -a YMASSArray=("800")
+# declare -a XMASSArray=("400")
 
 
 
@@ -140,25 +146,26 @@ for mx1 in ${XMASSArray[@]}; do
 
       case "$model" in
         "S3M")
-          pattern="mass2000004_([0-9]+\.[0-9]+)_mass52_([0-9]+\.[0-9]+)_dms3u22_([0-9\.eE\+-]+)_xs_([0-9\.eE\+-]+)"
+          pattern="mass2000004_${mY}.0_mass52_${mX}.0_dms3u22_([0-9\.eE\+-]+)_xs_([0-9\.eE\+-]+)"
           ;;
         "F3S")
-          pattern="mass5920004_([0-9]+\.[0-9]+)_dmf3u22_([0-9\.eE\+-]+)_mass51_([0-9]+\.[0-9]+)_xs_([0-9\.eE\+-]+)"
+          pattern="mass5920004_${mY}.0_dmf3u22_([0-9]+\.[0-9]+)_mass51_${mX}.0_xs_([0-9\.eE\+-]+)"
+          pattern1="mass5920004_${mY}.0_mass51_${mX}.0_dmf3u22_([0-9]+\.[0-9]+)_xs_([0-9\.eE\+-]+)"
           ;;
         "F3V")
-          pattern="mass5920004_([0-9]+\.[0-9]+)_mass53_([0-9]+\.[0-9]+)_dmf3u22_([0-9\.eE\+-]+)_xs_([0-9\.eE\+-]+)"
+          pattern="mass5920004_${mY}.0_mass53_${mX}.0_dmf3u22_([0-9\.eE\+-]+)_xs_([0-9\.eE\+-]+)"
           ;;
         *)
           echo "Invalid model: $model"
           return 1
           ;;
       esac
-
+      
       # Find tarball files in the folder matching the pattern
       matching_files=$(ls "$folder" | grep -E "$pattern")
-
+      matching_files1=$(ls "$folder" | grep -E "$pattern1")
       # Check if we found any matching files
-      if [ -z "$matching_files" ]; then
+      if [ -z "$matching_files" ] && [ -z "$matching_files1" ]; then
         # No match found
         return 1
       else
@@ -168,7 +175,6 @@ for mx1 in ${XMASSArray[@]}; do
 
     }
 
-    
     MA5exists=1
     missingpointsfile="$ResultsFolder/Results_${model}_SM${qstring}/${process}_${order}_MY${my}_MX${mx}_coup${coupling}/missingpoints.dat"
     if (( $(echo "$coupling < 0" | bc -l) )); then
@@ -176,39 +182,99 @@ for mx1 in ${XMASSArray[@]}; do
     fi
 
     if [[ ${process} == "XX" || ${process} == "XY" || ${process} == "YYQCD" ]]; then
-      MA5tarballpath="${ResultsFolder}/../${quark}/Results_${model}_recast/MA5_Recast/${model}_${process}_${order}_SM${quark}_MY${my}_MX${mx}_recast.tar.gz"
-      if [[ ! -f ${MA5tarballpath} ]]; then MA5exists=0; fi
-      if [[ $quark == "c" ]]; then
-        MA5tarballpath="${ResultsFolder}/../${model}_${process}/${order}/"
-	if ! find_tarball_for_masses "$MA5tarballpath" "$my" "$mx" "$model"; then MA5exists=0; fi
+      if [[ $quark != "c" ]]; then
+        MA5tarballpath="${ResultsFolder}/../${quark}/Results_${model}_recast/MA5_Recast/${model}_${process}_${order}_SM${quark}_MY${my}_MX${mx}_recast.tar.gz"
+        if [[ ! -f ${MA5tarballpath} ]]; then MA5exists=0; fi
+      else
+        MA5tarballpath="${ResultsFolder}/../${quark}/${model}_${process}/${order}/"
+        if ! find_tarball_for_masses "$MA5tarballpath" "$my" "$mx" "$model"; then MA5exists=0; fi
       fi
-    elif [[ $process == "YYsum" ]]; then
+    elif [[ $process == "YYtch" ]]; then
       if [[ -f $missingpointsfile ]]; then
         for proc1 in "YYtPP" "YYtPM" "YYtMM" "YYt" "YYbt" "YbYbt"; do
           # Check if proc1 is present in the second-to-last column
           if grep -q "\s${proc1}\s" "$missingpointsfile"; then
-            MA5tarballpath="${ResultsFolder}/../${quark}/Results_${model}_recast/MA5_Recast/${model}_${proc1}_${order}_SM${quark}_MY${my}_MX${mx}_recast.tar.gz"
-            if [[ $quark == "c" ]]; then
-              MA5tarballpath="${ResultsFolder}/../${model}_${proc1}/${order}/"
-	    fi
-            # Check if tarball does not exist
-            if [[ ! -f "$MA5tarballpath" ]]; then printf "$proc1 "; MA5exists=0; fi
+            if [[ $quark != "c" ]]; then
+              MA5tarballpath="${ResultsFolder}/../${quark}/Results_${model}_recast/MA5_Recast/${model}_${proc1}_${order}_SM${quark}_MY${my}_MX${mx}_recast.tar.gz"
+              if [[ ! -f "$MA5tarballpath" ]]; then printf "$proc1 "; MA5exists=0; fi
+            else
+              MA5tarballpath="${ResultsFolder}/../${quark}/${model}_${proc1}/${order}/"
+              if ! find_tarball_for_masses "$MA5tarballpath" "$my" "$mx" "$model"; then MA5exists=0; fi
+	        fi
           fi
         done
+      elif [[ ! -d "$ResultsFolder/Results_${model}_SM${qstring}/${process}_${order}_MY${my}_MX${mx}_coup${coupling}/" ]]; then
+        if [[ $quark != "c" ]]; then
+          for proc1 in "YYtPP" "YYtPM" "YYtMM"; do
+            MA5tarballpath="${ResultsFolder}/../${quark}/Results_${model}_recast/MA5_Recast/${model}_${proc1}_${order}_SM${quark}_MY${my}_MX${mx}_recast.tar.gz"
+            if [[ ! -f "$MA5tarballpath" ]]; then printf "$proc1 "; MA5exists=0; fi      
+          done
+        else
+          for proc1 in "YYt" "YYbt" "YbYbt"; do
+            MA5tarballpath="${ResultsFolder}/../${quark}/${model}_${proc1}/${order}/"
+            if ! find_tarball_for_masses "$MA5tarballpath" "$my" "$mx" "$model"; then MA5exists=0; fi
+          done
+        fi
+      fi
+    elif [[ $process == "YYsum" ]]; then
+      if [[ -f $missingpointsfile ]]; then
+        for proc1 in "YYQCD" "YYi" "YYtPP" "YYtPM" "YYtMM" "YYt" "YYbt" "YbYbt"; do
+          if [[ $proc1 == "YYi" && $order == "NLO" ]]; then continue; fi 
+          # Check if proc1 is present in the second-to-last column
+          if grep -q "\s${proc1}\s" "$missingpointsfile"; then
+            if [[ $quark != "c" ]]; then
+              MA5tarballpath="${ResultsFolder}/../${quark}/Results_${model}_recast/MA5_Recast/${model}_${proc1}_${order}_SM${quark}_MY${my}_MX${mx}_recast.tar.gz"
+              if [[ ! -f "$MA5tarballpath" ]]; then printf "$proc1 "; MA5exists=0; fi
+            else
+              MA5tarballpath="${ResultsFolder}/../${quark}/${model}_${proc1}/${order}/"
+              if ! find_tarball_for_masses "$MA5tarballpath" "$my" "$mx" "$model"; then MA5exists=0; fi
+	        fi
+          fi
+        done
+      elif [[ ! -d "$ResultsFolder/Results_${model}_SM${qstring}/${process}_${order}_MY${my}_MX${mx}_coup${coupling}/" ]]; then
+        if [[ $quark != "c" ]]; then
+          for proc1 in "YYQCD" "YYi" "YYtPP" "YYtPM" "YYtMM"; do
+            if [[ $proc1 == "YYi" && $order == "NLO" ]]; then continue; fi 
+            MA5tarballpath="${ResultsFolder}/../${quark}/Results_${model}_recast/MA5_Recast/${model}_${proc1}_${order}_SM${quark}_MY${my}_MX${mx}_recast.tar.gz"
+            if [[ ! -f "$MA5tarballpath" ]]; then printf "$proc1 "; MA5exists=0; fi      
+          done
+        else
+          for proc1 in "YYQCD" "YYi" "YYt" "YYbt" "YbYbt"; do
+            if [[ $proc1 == "YYi" && $order == "NLO" ]]; then continue; fi 
+            MA5tarballpath="${ResultsFolder}/../${quark}/${model}_${proc1}/${order}/"
+            if ! find_tarball_for_masses "$MA5tarballpath" "$my" "$mx" "$model"; then MA5exists=0; fi
+          done
+        fi
       fi
     elif [[ $process == "Full" ]]; then
-      if [[ -f $missingpointsfile  ]]; then
+      if [[ -f $missingpointsfile ]]; then
         for proc1 in "XX" "XY" "YYQCD" "YYi" "YYtPP" "YYtPM" "YYtMM" "YYt" "YYbt" "YbYbt"; do
-           # Check if proc1 is present in the second-to-last column
+          if [[ $proc1 == "YYi" && $order == "NLO" ]]; then continue; fi 
+          # Check if proc1 is present in the second-to-last column
           if grep -q "\s${proc1}\s" "$missingpointsfile"; then
-            MA5tarballpath="${ResultsFolder}/../${quark}/Results_${model}_recast/MA5_Recast/${model}_${proc1}_${order}_SM${quark}_MY${my}_MX${mx}_recast.tar.gz"
-            if [[ $quark == "c" ]]; then
-              MA5tarballpath="${ResultsFolder}/../${model}_${proc1}/${order}/"
-            fi
-            # Check if tarball does not exist
-	    if [[ ! -f "$MA5tarballpath" ]]; then printf "$proc1 "; MA5exists=0; fi
+            if [[ $quark != "c" ]]; then
+              MA5tarballpath="${ResultsFolder}/../${quark}/Results_${model}_recast/MA5_Recast/${model}_${proc1}_${order}_SM${quark}_MY${my}_MX${mx}_recast.tar.gz"
+              if [[ ! -f "$MA5tarballpath" ]]; then printf "$proc1 "; MA5exists=0; fi
+            else
+              MA5tarballpath="${ResultsFolder}/../${quark}/${model}_${proc1}/${order}/"
+              if ! find_tarball_for_masses "$MA5tarballpath" "$my" "$mx" "$model"; then MA5exists=0; fi
+	        fi
           fi
         done
+      elif [[ ! -d "$ResultsFolder/Results_${model}_SM${qstring}/${process}_${order}_MY${my}_MX${mx}_coup${coupling}/" ]]; then
+        if [[ $quark != "c" ]]; then
+          for proc1 in "XX" "XY" "YYQCD" "YYi" "YYtPP" "YYtPM" "YYtMM"; do
+            if [[ $proc1 == "YYi" && $order == "NLO" ]]; then continue; fi 
+            MA5tarballpath="${ResultsFolder}/../${quark}/Results_${model}_recast/MA5_Recast/${model}_${proc1}_${order}_SM${quark}_MY${my}_MX${mx}_recast.tar.gz"
+            if [[ ! -f "$MA5tarballpath" ]]; then printf "$proc1 "; MA5exists=0; fi      
+          done
+        else
+          for proc1 in "XX" "XY" "YYQCD" "YYi" "YYt" "YYbt" "YbYbt"; do
+          if [[ $proc1 == "YYi" && $order == "NLO" ]]; then continue; fi 
+            MA5tarballpath="${ResultsFolder}/../${quark}/${model}_${proc1}/${order}/"
+            if ! find_tarball_for_masses "$MA5tarballpath" "$my" "$mx" "$model"; then MA5exists=0; fi
+          done
+        fi
       fi
     fi
     if [[ $MA5exists == "0" ]]; then

@@ -135,7 +135,7 @@ def extract_tar(tar_gz_file, extract_path):
         pass
         #print(f"Error extracting '{tar_gz_file}': {e}")
 
-
+# define arrays for combined processes
 proclist = [proc_study]
 if proc_study == "YYsum":
     proclist = processes_YYsum
@@ -148,7 +148,7 @@ if proc_study == "YYtch":
 
 for iquark, quark in enumerate(quarks):
     
-    
+    # depending on the sign, set coupling or width/mass ratio
     coupling=inputcoupling
     # Check if coupling is negative
     if inputcoupling < 0:
@@ -208,7 +208,8 @@ for iquark, quark in enumerate(quarks):
     
     
     
-    
+    # read and rescale cross-sections. The charm quark is treated differently because the results have different structure
+
     # all but c
     if quark != "c":
         inputfolder = os.path.join(args.input, quark)
@@ -266,8 +267,8 @@ for iquark, quark in enumerate(quarks):
             print("no point found")
             sys.exit()
 
+        # calculate k factor (only for YYsum and Full)
         if proc_study == "YYsum" or proc_study == "Full":
-            # calculate k factor
             filtered_YYQCD_LO = select_row[(select_row["process"] == 'YYQCD') & (select_row['order'] == 'LO')]
             xsec_YYQCD_LO = filtered_YYQCD_LO['CShat(pb)'].values[0] if not filtered_YYQCD_LO.empty else 0
 
@@ -299,6 +300,7 @@ for iquark, quark in enumerate(quarks):
                 rescale_xsec_YYi[iquark] = (select_row_YYi['CShat(pb)'].values[0] * coupling ** coupling_power['YYi']*Kfactor_YYi) if not select_row_YYi.empty else 0
 
 
+        # apply cross-section rescaling
         for process in proclist:
             filtered_rows = select_row_order[select_row_order["process"] == process]
             if not filtered_rows.empty:
@@ -399,17 +401,16 @@ for iquark, quark in enumerate(quarks):
                     ycoup_dict[process,order1] = ycoup
                     xs_dict[process,order1] = xs
                 else:
+                    xs_dict[process, order1] = None
+                    ycoup_dict[process,order1] = 0
                     print(f"No matching file found for process {process}.")
 
         
-        # Now `ycoup_dict` and `xs_dict` hold values for all processes
-        # Example of accessing these values outside the loop:
-        #print("Couplings:", ycoup_dict)
-        #print("Cross sections (xs):", xs_dict)
-
         # calculate k factor
-        if order == "NLO" and quark != "t":
-            Kfactor_YYi=1
+        Kfactor_YYi=1
+        if xs_dict.get(("YYQCD", "LO")) is None or xs_dict.get(("YYbt", "LO")) is None:
+            print("One or both of YYQCD LO or YYbt LO values are missing, Kfactor set to 1.")
+        else:
             if xs_dict["YYQCD","LO"] == 0 and xs_dict["YYbt","LO"] == 0:
                 print("Both YYQCD at LO and YYbt at LO are missing, Kfactor set to 1")
             elif xs_dict["YYQCD","LO"] == 0:
@@ -444,13 +445,12 @@ for iquark, quark in enumerate(quarks):
                 rescale_xsec_YYtPM[iquark] = rescale_xsec
             elif process == 'YbYbt' or process == 'YYtMM':
                 rescale_xsec_YYtMM[iquark] = rescale_xsec
-        
-        
-        rescale_xsec_YYi[iquark] = (
-            xs_dict["YYi","LO"] / (ycoup_dict["YYi","LO"] ** coupling_power['YYi']) 
-            * coupling ** coupling_power['YYi'] 
-            * (Kfactor_YYi if order == "NLO" else 1)
-        ) if ycoup_dict["YYi","LO"] != 0 else 0
+            elif process == 'YYi':
+                rescale_xsec_YYi[iquark] = (
+                    xs_dict["YYi","LO"] / (ycoup_dict["YYi","LO"] ** coupling_power['YYi']) 
+                    * coupling ** coupling_power['YYi'] 
+                    * (Kfactor_YYi if order == "NLO" else 1)
+                ) if ycoup_dict["YYi","LO"] != 0 else 0
 
 
 #rescale_xsec_YYi=select_row_order_YYi[select_row_order_YYi["process"] == 'YYi']['CShat(pb)'].values[0]*coupling**coupling_power['YYi']
@@ -500,6 +500,7 @@ ma5.BackendManager.set_madanalysis_backend(args.ma5dir)
 
 # Samples to be combined. Each set of samples are generated and stored in separate directories
 
+# MA5-expert doesn't like SRs with - instead of _, so rename them if this is the case
 def replace_hyphens(data):
     if isinstance(data, dict):
         return {k.replace("-", "_"): replace_hyphens(v) for k, v in data.items()}
@@ -511,6 +512,7 @@ def replace_hyphens(data):
 # Flag to track whether there are any points to process
 points_processed = False
 
+# run the reinterpretation
 for iquark, quark in enumerate(quarks):
     for proc in proclist:
         
@@ -536,6 +538,7 @@ for iquark, quark in enumerate(quarks):
         # File name for missing points
         missingpointsfile = os.path.join(combined_path, 'missingpoints.dat')
 
+        # all quarks but charm
         if quark != "c":
             if proc in ['YYt', 'YYbt', 'YbYbt']:
                 continue  
@@ -560,6 +563,7 @@ for iquark, quark in enumerate(quarks):
                 with open(missingpointsfile, 'a') as missingpoints_file:
                     missingpoints_file.write(parameter_line)
             
+        # the charm case
         else:
             if proc in ['YYtPP', 'YYtPM', 'YYtMM']:
                 continue  
@@ -594,7 +598,7 @@ for iquark, quark in enumerate(quarks):
                 with open(missingpointsfile, 'r') as missingpoints_file:
                     lines = missingpoints_file.readlines()
                     if parameter_line in lines:
-                        if not os.path.exists(file+".tar.gz"):
+                        if file is not None and not os.path.exists(file + ".tar.gz"):
                             # If the tarball is missing, skip to the next point in the loop
                             print(f"Skipping point {parameter_line.strip()} because the tarball is missing.")
                             continue  # Skip this iteration
@@ -628,22 +632,6 @@ for iquark, quark in enumerate(quarks):
                 print(f"{mY:<5} {mX:<5} {model:<4} {quark:<3} {proc:<6} {order_file:<4} is missing", end='\n')
                 with open(missingpointsfile, 'a') as missingpoints_file:
                     missingpoints_file.write(parameter_line)
-
-            # Check the contents of the extracted folder
-            #try:
-                #print(os.listdir(os.path.join("/tmp/MA5_Recast")))
-            #except FileNotFoundError:
-                #print(f"Directory "+os.path.join("/tmp/MA5_Recast")+" does not exist.")
-            
-        ## If the tarball exists, print the details
-        #if os.path.exists(file+".tar.gz"):
-            #print(f"{mY:<5} {mX:<5} {model:<4} {quark:<3} {proc:<6} {order_file:<4}           ", end='\r')
-            #points_processed = True  # Set flag to True since we processed a point
-        #else:
-            #print(f"{mY:<5} {mX:<5} {model:<4} {quark:<3} {proc:<6} {order_file:<4} is missing", end='\r')
-            ## If not, log the missing point in missingpoints.dat
-            #with open(missingpointsfile, 'a') as missingpoints_file:
-                #missingpoints_file.write(parameter_line)
 
 
 # If no points were processed, print a message and exit
