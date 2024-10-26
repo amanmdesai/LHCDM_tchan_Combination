@@ -323,7 +323,6 @@ for iquark, quark in enumerate(quarks):
                 rescale_xsec_YYtMM[iquark] = rescale_xsec
 
 
-
     # the charm case
     else:
         
@@ -332,6 +331,7 @@ for iquark, quark in enumerate(quarks):
         
         for process in proclist:
             for order1 in orders:
+                print(process, order, quark)
 
                 if  (process == "YYi" and order1 == "NLO") or (model == "F3V" and order1 == "NLO"):
                     #print(f"Skipping combination: process={process}, order={order1}, model={model}")
@@ -347,16 +347,16 @@ for iquark, quark in enumerate(quarks):
                 def extract_values(filename, model):
                     if model == 'S3M':
                         # Pattern for S3M model
-                        pattern = r"mass2000004_(\d+\.\d+)_mass52_(\d+\.\d+)_dms3u22_([\d\.eE\+-]+)_xs_([\d\.eE\+-]+)"
-                    elif model == 'F3S':
-                        # Alternative pattern for S3M model (mass5920004)
-                        pattern = r"mass5920004_(\d+\.\d+)_dmf3u22_([\d\.eE\+-]+)_mass51_(\d+\.\d+)_xs_([\d\.eE\+-]+)"
+                        pattern = r"mass2000004_(\d+\.\d+)_mass52_(\d+\.\d+)_dms3u22_([\d\.eE\+-]+)_xs_([\d\.eE\+-]+)" 
+                    elif model == 'F3S' and "tag" in filename:
+                        pattern = r"mass5920004_([\d.]+)_mass51_([\d.]+)_dmf3u22_([\d.]+)_xs_([\deE.-]+)(_tag_\d+)?\.tar\.gz"
+                    elif model == 'F3S' and "tag" not in filename:
+                        pattern = r"mass5920004_(?P<mass1_value>[\d.]+)_dmf3u22_(?P<dmf3u22>[\d.]+)_mass51_(?P<mass2_value>[\d.]+)_xs_(?P<xs>[\deE.-]+)\.tar\.gz"
                     elif model == 'F3V':
                         # Pattern for F3V model
-                        pattern = r"mass5920004_(\d+\.\d+)_mass53_(\d+\.\d+)_dmf3u22_([\d\.eE\+-]+)_xs_([\d\.eE\+-]+)"
+                        pattern = r"mass5920004_(\d+\.\d+)_mass53_(\d+\.\d+)_dmf3u22_([\d\.eE\+-]+)_xs_([\d\.eE\+-]+)" 
                     else:
                         return None
-
                     match = re.search(pattern, filename)
                     if match:
                         if model == 'S3M':
@@ -365,7 +365,13 @@ for iquark, quark in enumerate(quarks):
                             ycoup = float(match.group(3))
                             xs = float(match.group(4))
                             return mass1, mass2, ycoup, xs
-                        elif model == 'F3S':
+                        elif model == 'F3S' and "tag" in filename:
+                            mass1 = float(match.group(1))
+                            ycoup = float(match.group(3))
+                            mass2 = float(match.group(2))
+                            xs = float(match.group(4))
+                            return mass1, mass2, ycoup, xs
+                        elif model == 'F3S' and "tag" not in filename:
                             mass1 = float(match.group(1))
                             ycoup = float(match.group(2))
                             mass2 = float(match.group(3))
@@ -387,6 +393,8 @@ for iquark, quark in enumerate(quarks):
                                 mass1, mass2, ycoup, xs = values
                                 if mass1 == input_mass1 and mass2 == input_mass2:
                                     return ycoup, xs
+                                else: # aman
+                                    continue #aman
                     return None, None
 
                 # Example usage for folder
@@ -568,16 +576,21 @@ for iquark, quark in enumerate(quarks):
             if proc in ['YYtPP', 'YYtPM', 'YYtMM']:
                 continue  
             def find_tarball_for_masses(folder, mY, mX, model):
-                if model == 'S3M':
-                    pattern = r"mass2000004_(\d+\.\d+)_mass52_(\d+\.\d+)_dms3u22_([\d\.eE\+-]+)_xs_([\d\.eE\+-]+)"
-                elif model == 'F3S':
-                    pattern = r"mass5920004_(\d+\.\d+)_dmf3u22_([\d\.eE\+-]+)_mass51_(\d+\.\d+)_xs_([\d\.eE\+-]+)"
-                elif model == 'F3V':
-                    pattern = r"mass5920004_(\d+\.\d+)_mass53_(\d+\.\d+)_dmf3u22_([\d\.eE\+-]+)_xs_([\d\.eE\+-]+)"
-                else:
-                    return None
-
                 for filename in os.listdir(folder):
+
+                    if model == 'S3M':
+                        # Pattern for S3M model
+                        pattern = r"mass2000004_(\d+\.\d+)_mass52_(\d+\.\d+)_dms3u22_([\d\.eE\+-]+)_xs_([\d\.eE\+-]+)" 
+                    elif model == 'F3S' and "tag" in filename:
+                        pattern = r"mass5920004_([\d.]+)_mass51_([\d.]+)_dmf3u22_([\d.]+)_xs_([\deE.-]+)(_tag_\d+)?\.tar\.gz"
+                    elif model == 'F3S' and "tag" not in filename:
+                        pattern = r"mass5920004_(?P<mass1_value>[\d.]+)_dmf3u22_(?P<dmf3u22>[\d.]+)_mass51_(?P<mass2_value>[\d.]+)_xs_(?P<xs>[\deE.-]+)\.tar\.gz"
+                    elif model == 'F3V':
+                        # Pattern for F3V model
+                        pattern = r"mass5920004_(\d+\.\d+)_mass53_(\d+\.\d+)_dmf3u22_([\d\.eE\+-]+)_xs_([\d\.eE\+-]+)" 
+                    else:
+                        return None
+
                     if filename.endswith(".tar.gz"):
                         match = re.search(pattern, filename)
                         if match:
@@ -836,5 +849,3 @@ if not os.path.exists(missingpointsfile):
         print(f"Removed original folder: {combined_path}")
 
     print(f"Folder {proc_study_folder} compressed into {tar_path}")
-
-
