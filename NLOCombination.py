@@ -349,7 +349,7 @@ for iquark, quark in enumerate(quarks):
                         # Pattern for S3M model
                         pattern = r"mass2000004_(\d+\.\d+)_mass52_(\d+\.\d+)_dms3u22_([\d\.eE\+-]+)_xs_([\d\.eE\+-]+)"
                     elif model == 'F3S':
-                        # Alternative pattern for S3M model (mass5920004)
+                        # Pattern for F3S model
                         pattern = r"mass5920004_(\d+\.\d+)_dmf3u22_([\d\.eE\+-]+)_mass51_(\d+\.\d+)_xs_([\d\.eE\+-]+)"
                     elif model == 'F3V':
                         # Pattern for F3V model
@@ -836,5 +836,4 @@ if not os.path.exists(missingpointsfile):
         print(f"Removed original folder: {combined_path}")
 
     print(f"Folder {proc_study_folder} compressed into {tar_path}")
-
 
