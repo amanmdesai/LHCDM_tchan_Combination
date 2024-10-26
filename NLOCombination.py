@@ -331,7 +331,6 @@ for iquark, quark in enumerate(quarks):
         
         for process in proclist:
             for order1 in orders:
-                print(process, order, quark)
 
                 if  (process == "YYi" and order1 == "NLO") or (model == "F3V" and order1 == "NLO"):
                     #print(f"Skipping combination: process={process}, order={order1}, model={model}")
@@ -354,7 +353,7 @@ for iquark, quark in enumerate(quarks):
                         pattern = r"mass5920004_(?P<mass1_value>[\d.]+)_dmf3u22_(?P<dmf3u22>[\d.]+)_mass51_(?P<mass2_value>[\d.]+)_xs_(?P<xs>[\deE.-]+)\.tar\.gz"
                     elif model == 'F3V':
                         # Pattern for F3V model
-                        pattern = r"mass5920004_(\d+\.\d+)_mass53_(\d+\.\d+)_dmf3u22_([\d\.eE\+-]+)_xs_([\d\.eE\+-]+)" 
+                        pattern = r"mass5920004_(\d+\.\d+)_mass53_(\d+\.\d+)_dmf3u22_([\d\.eE\+-]+)_xs_([\d\.eE\+-]+)"
                     else:
                         return None
                     match = re.search(pattern, filename)
@@ -393,8 +392,8 @@ for iquark, quark in enumerate(quarks):
                                 mass1, mass2, ycoup, xs = values
                                 if mass1 == input_mass1 and mass2 == input_mass2:
                                     return ycoup, xs
-                                else: # aman
-                                    continue #aman
+                                else: 
+                                    continue 
                     return None, None
 
                 # Example usage for folder
